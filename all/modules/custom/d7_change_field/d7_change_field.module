@@ -1,0 +1,40 @@
+<?php
+/**
+* @file
+* It allows you to change name of the form's field.
+*/
+
+/**
+ * Implements hook_help().
+ *
+ * Displays help and module information.
+ */
+function d7_change_field_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d7_change_field":
+      return '' . t("Allows you to change name of the form's field.") . '';
+      break;
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function d7_change_field_permission() {
+  return array(
+    'access d7_change_field content' => array(
+      'title' => t('Access content for the Subscription posts module'),
+    )
+  );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function d7_change_field_form_subscription_form_alter(&$form, &$form_state) {
+  $form['userName'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Please, type your name here:'),
+    '#required' => TRUE,
+  );
+}

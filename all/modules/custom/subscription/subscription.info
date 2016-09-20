@@ -1,0 +1,4 @@
+name = Subscription
+description = This module allows to add subscription form.
+core = 7.x
+package = My Modules

@@ -1,0 +1,120 @@
+<?php
+/**
+ * @file
+ * This module allows to add subscription form.
+ */
+
+module_load_include('inc', 'subscription', 'includes/d7_create_form');
+
+/**
+ * Implements hook_menu().
+ */
+function subscription_menu() {
+  $items = array();
+
+  $items['examples/subscription'] = array(
+    'title' => 'Subscription',
+    'description' => 'A form to subscribe.',
+    'page callback' => 'd7_create_form',
+    'page arguments' => array('subscription_form'),
+    'access arguments' => array('access subscription content')
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function subscription_permission() {
+  return array(
+    'access subscription content' => array(
+      'title' => t('Access content for the Subscription posts module'),
+    )
+  );
+}
+
+/**
+ * Implements hook_help().
+ *
+ * Displays help and module information.
+ */
+function subscription_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#subscription":
+      return '' . t("Allows to add subscription form") . '';
+      break;
+  }
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Creates form for subscription.
+ */
+function subscription_form($form, &$form_state) {
+
+  $form['userName'] = array(
+    '#type' => 'textfield',
+    '#title' => t('What is your login?'),
+    '#size' => 20,
+    '#maxlength' => 20,
+    '#required' => TRUE,
+  );
+
+  $form['email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('What is your e-mail?'),
+    '#size' => 30,
+    '#maxlength' => 30,
+    '#required' => TRUE,
+  );
+
+  $form['agreement'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('I agree with <a href="#">terms and conditions</a>'),
+    '#default_value' => FALSE,
+  );
+
+  $form['submitButton'] = array(
+    '#type' => 'submit',
+    '#value' => t('Subscribe!'),
+  );
+
+  return $form;
+}
+
+/**
+ * Implements hook_form_validate().
+ */
+function subscription_form_validate($form, &$form_state) {
+  $userName = $form_state['values']['userName'];
+
+  if (!($userName)) {
+    form_set_error('userName', t('Please enter your name.'));
+  }
+  elseif (!preg_match("/^[a-zA-Z ]*$/", $userName)) {
+    form_set_error('userName', t('Only letters and white spaces allowed in Your Name.'));
+  }
+
+  $email = $form_state['values']['email'];
+  if (!($email)) {
+    form_set_error('email', t('Please enter your e-mail.'));
+  }
+  elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    form_set_error('email', t('Invalid email format.'));
+  }
+
+  $agreement = $form_state['values']['agreement'];
+  if (!($agreement)) {
+    form_set_error('agreement', t('Subscription available only if you agree with rules.'));
+  }
+}
+
+/**
+ * Implements hook_form_submit().
+ */
+function subscription_form_submit($form, &$form_state) {
+  $name = $form_state['values']['userName'];
+  drupal_set_message(t($name . ', you subscribed successfully! Congratulations!'));
+}
