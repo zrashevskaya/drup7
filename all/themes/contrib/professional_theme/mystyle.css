@@ -1,0 +1,51 @@
+div#wrapper.subscription section#post-content a {
+    text-decoration: none;
+    text-align: center;
+    color: #888888;
+}
+
+div#wrapper.subscription section#post-content form {
+    width: 382px;
+}
+
+div#wrapper.subscription section#post-content h1 {
+    font-size: 22px;
+    color: #fff;
+    text-align: center;
+    margin: 12px 0 2px;
+}
+
+div#wrapper.subscription section#post-content input[type="text"],
+div#wrapper.subscription section#post-content input[type="submit"] {
+    display: inline-block;
+    height: 32px;
+    width: 100%;
+    margin: 14px 0;
+    box-sizing: border-box;
+    color: #798790;
+    padding-left: 10px;
+    border: 1px solid #798790;
+    background: none;
+}
+
+div#wrapper.subscription section#post-content input:focus{
+    border: 1px solid #1ab188;
+}
+
+div#wrapper.subscription section#post-content input[type="submit"] {
+    height: 57px;
+    color: #fff;
+    font-size: 22px;
+    background: #1ab188;
+    border: none;
+}
+
+div#wrapper.subscription section#post-content input[type="submit"]:hover{
+    background: #09a077;
+    cursor: pointer;
+}
+
+div#wrapper.subscription section#post-content input.form-text {
+    height: 52px;
+    font-size: 16px;
+}

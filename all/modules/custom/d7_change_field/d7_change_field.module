@@ -1,8 +1,8 @@
 <?php
 /**
-* @file
-* It allows you to change name of the form's field.
-*/
+ * @file
+ * It allows you to change name of the form's field.
+ */
 
 /**
  * Implements hook_help().

@@ -1581,3 +1581,20 @@ body.two-sidebars #sidebar-first {
 .marker, .form-required {
  color:#8B0000;
 }
+
+div#wrapper.subscription section#post-content{
+  background: #24323d;
+  width: 382px;
+  height: auto;
+  margin: 0 auto;
+  padding: 30px 25px 30px 30px;
+  border-radius: 4px;
+  color: #fff;
+}
+
+div#wrapper.subscription h1.page-title {
+  font-size: 22px;
+  color: #fff;
+  text-align: center;
+  margin: 32px 0 2px;
+}
