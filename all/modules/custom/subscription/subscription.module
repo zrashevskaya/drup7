@@ -59,6 +59,13 @@ function subscription_form($form, &$form_state) {
     '#title' => t('What is your login?'),
     '#size' => 20,
     '#maxlength' => 20,
+    '#rules' => array(
+      array(
+        'rule' => 'regexp[/^[a-zA-Z ]*$/]',
+        'error' => t('Only letters and white spaces allowed in Your Name.'
+        )
+      )
+    ),
     '#required' => TRUE,
   );
 
@@ -67,6 +74,13 @@ function subscription_form($form, &$form_state) {
     '#title' => t('What is your e-mail?'),
     '#size' => 30,
     '#maxlength' => 30,
+    '#rules' => array(
+      array(
+        'rule' => 'email',
+        'error' => t('Invalid email format.'
+        )
+      )
+    ),
     '#required' => TRUE,
   );
 
@@ -74,6 +88,7 @@ function subscription_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('I agree with <a href="#">terms and conditions</a>'),
     '#default_value' => FALSE,
+    '#required' => TRUE,
   );
 
   $form['submitButton'] = array(
@@ -85,36 +100,11 @@ function subscription_form($form, &$form_state) {
 }
 
 /**
- * Implements hook_form_validate().
- */
-function subscription_form_validate($form, &$form_state) {
-  $userName = $form_state['values']['userName'];
-
-  if (!($userName)) {
-    form_set_error('userName', t('Please enter your name.'));
-  }
-  elseif (!preg_match("/^[a-zA-Z ]*$/", $userName)) {
-    form_set_error('userName', t('Only letters and white spaces allowed in Your Name.'));
-  }
-
-  $email = $form_state['values']['email'];
-  if (!($email)) {
-    form_set_error('email', t('Please enter your e-mail.'));
-  }
-  elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    form_set_error('email', t('Invalid email format.'));
-  }
-
-  $agreement = $form_state['values']['agreement'];
-  if (!($agreement)) {
-    form_set_error('agreement', t('Subscription available only if you agree with rules.'));
-  }
-}
-
-/**
  * Implements hook_form_submit().
  */
 function subscription_form_submit($form, &$form_state) {
   $name = $form_state['values']['userName'];
-  drupal_set_message(t($name . ', you subscribed successfully! Congratulations!'));
+  drupal_set_message(
+    t("!name, you subscribed successfully! Congrats!", array('!name'=>$name))
+  );
 }
