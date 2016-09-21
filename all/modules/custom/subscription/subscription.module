@@ -4,8 +4,6 @@
  * This module allows to add subscription form.
  */
 
-module_load_include('inc', 'subscription', 'includes/d7_create_form');
-
 /**
  * Implements hook_menu().
  */
@@ -15,6 +13,8 @@ function subscription_menu() {
   $items['examples/subscription'] = array(
     'title' => 'Subscription',
     'description' => 'A form to subscribe.',
+    'file' => 'd7_create_form.inc',
+    'file path' => 'sites/all/modules/custom/subscription/includes',
     'page callback' => 'd7_create_form',
     'page arguments' => array('subscription_form'),
     'access arguments' => array('access subscription content')
