@@ -14,7 +14,7 @@ function subscription_menu() {
     'title' => 'Subscription',
     'description' => 'A form to subscribe.',
     'file' => 'd7_create_form.inc',
-    'file path' => 'sites/all/modules/custom/subscription/includes',
+    'file path' => drupal_get_path('module','subscription').'/includes',
     'page callback' => 'd7_create_form',
     'page arguments' => array('subscription_form'),
     'access arguments' => array('access subscription content')
@@ -42,7 +42,7 @@ function subscription_permission() {
 function subscription_help($path, $arg) {
   switch ($path) {
     case "admin/help#subscription":
-      return '' . t("Allows to add subscription form") . '';
+      return t("Allows to add subscription form");
       break;
   }
 }

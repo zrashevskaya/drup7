@@ -63,7 +63,6 @@
  * @see template_preprocess_page()
  * @see template_process()
  */
-drupal_add_css(path_to_theme().'/mystyle.css', 'theme', 'all', 'FALSE');
 ?>
 
 <div id="wrapper" class="subscription">

@@ -1,0 +1,17 @@
+name = Prof Sub Theme
+description = Prof Sub Theme is a responsive Drupal 7 theme. Changed for testing.
+core = 7.x
+engine = phptemplate
+base theme = professional_theme
+stylesheets[all][] = mystyle.css
+regions[sidebar_first]  = First Sidebar
+regions[sidebar_second] = Second Sidebar
+regions[header]         = Header
+regions[front_welcome]  = Front Welcome
+regions[content]        = Content
+regions[content_top]    = Content Top
+regions[help]           = Help
+regions[footer]         = Footer
+regions[footer_first]   = First Bottom
+regions[footer_second]  = Second Bottom
+regions[footer_third]   = Third Bottom
