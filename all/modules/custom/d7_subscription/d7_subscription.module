@@ -1,0 +1,180 @@
+<?php
+/**
+ * @file
+ * This module allows to add subscription form.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function d7_subscription_menu() {
+  $items = array();
+
+  $items['d7_subscription'] = array(
+    'title' => 'Subscribe For News',
+    'description' => 'A form to subscribe.',
+    'file' => 'd7_subscription_create_form.inc',
+    'file path' => drupal_get_path('module', 'd7_subscription') . '/includes',
+    'page callback' => 'd7_subscription_create_form',
+    'page arguments' => array('d7_subscription_form'),
+    'access arguments' => array('access d7_subscription content')
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function d7_subscription_permission() {
+  return array(
+    'access d7_subscription content' => array(
+      'title' => t('Access content for the D7 Subscription posts module'),
+    )
+  );
+}
+
+/**
+ * Implements hook_help().
+ *
+ * Displays help and module information.
+ */
+function d7_subscription_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d7_subscription":
+      return t("Allows to add d7 subscription form");
+      break;
+  }
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Creates form for subscription.
+ */
+function d7_subscription_form($form, &$form_state) {
+
+  $form['userName'] = array(
+    '#type' => 'textfield',
+    '#title' => t('What is your name?'),
+    '#size' => 20,
+    '#maxlength' => 20,
+    '#attributes' => array(
+      'placeholder' => t('Name *'),
+    ),
+    '#rules' => array(
+      array(
+        'rule' => 'regexp[/^[a-zA-Z ]*$/]',
+        'error' => t('Only letters and white spaces allowed in Your Name.'
+        )
+      )
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['lastName'] = array(
+    '#type' => 'textfield',
+    '#title' => t('What is your last name?'),
+    '#size' => 30,
+    '#maxlength' => 30,
+    '#attributes' => array(
+      'placeholder' => t('Last name *'),
+    ),
+    '#rules' => array(
+      array(
+        'rule' => 'regexp[/^[a-zA-Z ]*$/]',
+        'error' => t('Only letters and white spaces allowed in Your Last Name.'
+        )
+      )
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('What is your e-mail?'),
+    '#size' => 30,
+    '#maxlength' => 30,
+    '#attributes' => array(
+      'placeholder' => t('E-mail *'),
+    ),
+    '#rules' => array(
+      array(
+        'rule' => 'email',
+        'error' => t('Invalid email format.'
+        )
+      )
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['confirm_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Please, repeat your e-mail.'),
+    '#size' => 30,
+    '#maxlength' => 30,
+    '#attributes' => array(
+      'placeholder' => t('Repeate E-mail *'),
+    ),
+    '#rules' => array(
+      array(
+        'rule' => 'email',
+        'error' => t('Invalid email format.'
+        )
+      )
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['submitButton'] = array(
+    '#type' => 'submit',
+    '#value' => t('Subscribe!'),
+  );
+
+  return $form;
+}
+
+/**
+ * Implements hook_form_submit().
+ */
+function d7_subscription_form_submit($form, &$form_state) {
+  $values = array(
+    'userName' => $form_state['values']['userName'],
+    'lastName' => $form_state['values']['lastName'],
+    'email' => $form_state['values']['email'],
+    'confirm_email' => $form_state['values']['confirm_email']
+  );
+  if ($values['email'] == $values['confirm_email']) {
+    $result = db_select('d7_subscription')
+      ->condition('email', $values['email'])
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if (!$result) {
+      db_insert('d7_subscription')
+        ->fields(array(
+          'name' => $values['userName'],
+          'last_name' => $values['lastName'],
+          'email' => $values['email']
+        ))
+        ->execute();
+
+      drupal_set_message(
+        t("!name, you subscribed successfully! Congrats!", array('!name' => $values['userName']))
+      );
+    }
+    else {
+      drupal_set_message(
+        t("!name, your e-mail is already subscribed.", array('!name' => $values['userName'])),
+        'error'
+      );
+    }
+  }
+  else {
+    drupal_set_message(
+      t("!name, please check your e-mail repeat.", array('!name' => $values['userName'])),
+      'error'
+    );
+  }
+}

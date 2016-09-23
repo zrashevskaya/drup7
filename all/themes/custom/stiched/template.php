@@ -3,6 +3,15 @@
 /**
  * Add body classes if certain regions have content.
  */
+function stiched_theme($existing, $type, $theme, $path) {
+  $items['d7_subscription_form'] = array(
+    'render element' => 'form',
+    'template' => 'd7-subscription',
+    'path' => drupal_get_path('theme', 'stiched') . '/templates/form',
+  );
+  return $items;
+}
+
 function stiched_preprocess_html(&$variables) {
   if (!empty($variables['page']['featured'])) {
     $variables['classes_array'][] = 'featured';
@@ -10,20 +19,30 @@ function stiched_preprocess_html(&$variables) {
 
   if (!empty($variables['page']['triptych_first'])
     || !empty($variables['page']['triptych_middle'])
-    || !empty($variables['page']['triptych_last'])) {
+    || !empty($variables['page']['triptych_last'])
+  ) {
     $variables['classes_array'][] = 'triptych';
   }
 
   if (!empty($variables['page']['footer_firstcolumn'])
     || !empty($variables['page']['footer_secondcolumn'])
     || !empty($variables['page']['footer_thirdcolumn'])
-    || !empty($variables['page']['footer_fourthcolumn'])) {
+    || !empty($variables['page']['footer_fourthcolumn'])
+  ) {
     $variables['classes_array'][] = 'footer-columns';
   }
 
   // Add conditional stylesheets for IE
-  drupal_add_css(path_to_theme() . '/css/ie.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 7', '!IE' => FALSE), 'preprocess' => FALSE));
-  drupal_add_css(path_to_theme() . '/css/ie6.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'IE 6', '!IE' => FALSE), 'preprocess' => FALSE));
+  drupal_add_css(path_to_theme() . '/css/ie.css', array(
+    'group' => CSS_THEME,
+    'browsers' => array('IE' => 'lte IE 7', '!IE' => FALSE),
+    'preprocess' => FALSE
+  ));
+  drupal_add_css(path_to_theme() . '/css/ie6.css', array(
+    'group' => CSS_THEME,
+    'browsers' => array('IE' => 'IE 6', '!IE' => FALSE),
+    'preprocess' => FALSE
+  ));
 }
 
 /**
@@ -46,7 +65,7 @@ function stiched_process_page(&$variables) {
   }
   // Always print the site name and slogan, but if they are toggled off, we'll
   // just hide them visually.
-  $variables['hide_site_name']   = theme_get_setting('toggle_name') ? FALSE : TRUE;
+  $variables['hide_site_name'] = theme_get_setting('toggle_name') ? FALSE : TRUE;
   $variables['hide_site_slogan'] = theme_get_setting('toggle_slogan') ? FALSE : TRUE;
   if ($variables['hide_site_name']) {
     // If toggle_name is FALSE, the site_name will be empty, so we rebuild it.
@@ -93,7 +112,7 @@ function stiched_preprocess_maintenance_page(&$variables) {
 function stiched_process_maintenance_page(&$variables) {
   // Always print the site name and slogan, but if they are toggled off, we'll
   // just hide them visually.
-  $variables['hide_site_name']   = theme_get_setting('toggle_name') ? FALSE : TRUE;
+  $variables['hide_site_name'] = theme_get_setting('toggle_name') ? FALSE : TRUE;
   $variables['hide_site_slogan'] = theme_get_setting('toggle_slogan') ? FALSE : TRUE;
   if ($variables['hide_site_name']) {
     // If toggle_name is FALSE, the site_name will be empty, so we rebuild it.
@@ -114,10 +133,10 @@ function stiched_preprocess_node(&$variables, $hook) {
   }
   if ($variables['type'] == 'custom') {
 
-  $wrapper = entity_metadata_wrapper('node', $variables['node']);
-  $field_page_type = $wrapper->field_page_type->value();
+    $wrapper = entity_metadata_wrapper('node', $variables['node']);
+    $field_page_type = $wrapper->field_page_type->value();
     if ($field_page_type) {
-      $variables['theme_hook_suggestions'][] = 'node__'.$field_page_type;
+      $variables['theme_hook_suggestions'][] = 'node__' . $field_page_type;
     }
   }
 }
@@ -158,7 +177,7 @@ function stiched_field__taxonomy_term_reference($variables) {
   $output .= '</ul>';
 
   // Render the top-level DIV.
-  $output = '<div class="' . $variables['classes'] . (!in_array('clearfix', $variables['classes_array']) ? ' clearfix' : '') . '"' . $variables['attributes'] .'>' . $output . '</div>';
+  $output = '<div class="' . $variables['classes'] . (!in_array('clearfix', $variables['classes_array']) ? ' clearfix' : '') . '"' . $variables['attributes'] . '>' . $output . '</div>';
 
   return $output;
 }

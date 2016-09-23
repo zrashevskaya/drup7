@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function d7_subscription_schema(){
+  $schema['d7_subscription'] = array(
+    'description' => t('The table for subscribers data.'),
+    'fields' => array(
+      'subscription_id' => array(
+        'description' => t('The primary identifier for a subscriber.'),
+        'type' => 'serial',
+        'not null' => TRUE
+      ),
+      'name' => array(
+        'description' => t('User name.'),
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE
+      ),
+      'last_name' => array(
+        'description' => t('User last name.'),
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE
+      ),
+      'email' => array(
+        'description' => t('User e-mail for subscription.'),
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE
+      ),
+    ),
+    'unique keys' => array('email' => array('email')),
+    'primary key' => array('subscription_id'),
+  );
+  return $schema;
+}
