@@ -59,7 +59,7 @@ width: 182px;
 display: inline-block;
 }
 
-#content .back .short.input_field:first-child {
+.back #first.short.input_field {
     margin-right: 14px;
 }
 

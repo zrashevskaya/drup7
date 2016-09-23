@@ -11,7 +11,7 @@ function d7_subscription_menu() {
   $items = array();
 
   $items['d7_subscription'] = array(
-    'title' => 'Subscribe For News',
+    'title' => 'Subscription',
     'description' => 'A form to subscribe.',
     'file' => 'd7_subscription_create_form.inc',
     'file path' => drupal_get_path('module', 'd7_subscription') . '/includes',
@@ -21,6 +21,15 @@ function d7_subscription_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function d7_subscription_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && !empty($plugin)) {
+    return 'plugins/' . $plugin;
+  }
 }
 
 /**

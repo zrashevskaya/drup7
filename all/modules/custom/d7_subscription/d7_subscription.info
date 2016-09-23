@@ -2,3 +2,4 @@ name = D7 Subscription
 description = This module allows to add subscription form.
 core = 7.x
 package = My Modules
+dependencies[] = ctools
