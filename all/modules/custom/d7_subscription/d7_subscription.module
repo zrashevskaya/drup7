@@ -78,7 +78,12 @@ function d7_subscription_form($form, &$form_state) {
         )
       )
     ),
-    '#required' => TRUE,
+    '#ajax' => array(
+      'callback' => 'd7_subscription_lastname_callback',
+      'wrapper' => 'lastname',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
   );
 
   $form['lastName'] = array(
@@ -86,6 +91,8 @@ function d7_subscription_form($form, &$form_state) {
     '#title' => t('What is your last name?'),
     '#size' => 30,
     '#maxlength' => 30,
+    '#prefix' => '<div id="lastname">',
+    '#suffix' => '</div>',
     '#attributes' => array(
       'placeholder' => t('Last name *'),
     ),
@@ -96,7 +103,50 @@ function d7_subscription_form($form, &$form_state) {
         )
       )
     ),
-    '#required' => TRUE,
+//    '#required' => TRUE,
+  );
+
+  $form['sex'] = array(
+    '#type' => 'radios',
+    '#title' => t('Who are you?'),
+    '#options' => array(
+      'man' => t('Man'),
+      'woman' => t('Woman'),
+    ),
+    '#default_value' => t(variable_get('sex', 'woman')),
+  );
+
+  $form['age'] = array(
+    '#type' => 'textfield',
+    '#title' => t('How old are you?'),
+    '#attributes' => array(
+      'placeholder' => t('Your age'),
+    ),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="sex"]' => array(
+          'value' => t(variable_get('sex', 'man')),
+        ),
+      ),
+    ),
+  );
+
+  $form['country'] = array(
+    '#type' => 'select',
+    '#title' => t('Choose your country'),
+    '#options' => array(
+      'ukraine' => t('Ukraine'),
+      'usa' => t('USA'),
+      'utopia' => t('Utopia'),
+    ),
+    '#default_value' => t(variable_get('country', 'ukraine')),
+    '#suffix' => '<div id="cities"></div>',
+    '#ajax' => array(
+      'callback' => 'd7_subscription_city_callback',
+      'wrapper' => 'cities',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
   );
 
   $form['email'] = array(
@@ -110,8 +160,7 @@ function d7_subscription_form($form, &$form_state) {
     '#rules' => array(
       array(
         'rule' => 'email',
-        'error' => t('Invalid email format.'
-        )
+        'error' => t('Invalid email format.')
       )
     ),
     '#required' => TRUE,
@@ -128,8 +177,7 @@ function d7_subscription_form($form, &$form_state) {
     '#rules' => array(
       array(
         'rule' => 'email',
-        'error' => t('Invalid email format.'
-        )
+        'error' => t('Invalid email format.')
       )
     ),
     '#required' => TRUE,
@@ -143,47 +191,131 @@ function d7_subscription_form($form, &$form_state) {
   return $form;
 }
 
+function d7_subscription_lastname_callback($form, &$form_state){
+  if (!empty($form_state['values']['userName'])){
+    $form['lastName'] = array(
+      '#type' => 'textfield',
+      '#title' => t('What is your last name?'),
+      '#size' => 30,
+      '#maxlength' => 30,
+      '#prefix' => '<div id="lastname">',
+      '#suffix' => '</div>',
+      '#attributes' => array(
+        'placeholder' => t('Last name *'),
+      ),
+      '#rules' => array(
+        array(
+          'rule' => 'regexp[/^[a-zA-Z ]*$/]',
+          'error' => t('Only letters and white spaces allowed in Your Last Name.'
+          )
+        )
+      ),
+    '#required' => TRUE,
+    );
+  }
+  else{
+    $form['lastName'] = array(
+      '#type' => 'textfield',
+      '#title' => t('What is your last name?'),
+      '#size' => 30,
+      '#maxlength' => 30,
+      '#prefix' => '<div id="lastname">',
+      '#suffix' => '</div>',
+      '#attributes' => array(
+        'placeholder' => t('Last name *'),
+      ),
+      '#rules' => array(
+        array(
+          'rule' => 'regexp[/^[a-zA-Z ]*$/]',
+          'error' => t('Only letters and white spaces allowed in Your Last Name.'
+          )
+        )
+      ),
+    );
+  }
+}
+
+function d7_subscription_city_callback($form, &$form_state){
+  if ($form_state['values']['country'] == 'ukraine'){
+    $form['city'] = array(
+      '#type' => 'select',
+      '#title' => t('Choose your city'),
+      '#prefix' => '<div id="cities">',
+      '#suffix' => '</div>',
+      '#options' => array(
+        'kiev' => t('Kiev'),
+        'kharkov' => t('Kharkov'),
+        'lvov' => t('Lvov'),
+      ),
+    );
+  }
+  elseif ($form_state['values']['country'] == 'usa'){
+    $form['city'] = array(
+      '#type' => 'select',
+      '#title' => t('Choose your city'),
+      '#prefix' => '<div id="cities">',
+      '#suffix' => '</div>',
+      '#options' => array(
+        'washington' => t('Washington'),
+        'vegas' => t('Las Vegas'),
+        'york' => t('New York'),
+      ),
+    );
+  }
+  else{
+    $form['city'] = array(
+      '#prefix' => '<div id="cities">',
+      '#suffix' => '</div>',
+    );
+  }
+  return $form['city'];
+}
+
 /**
  * Implements hook_form_submit().
  */
 function d7_subscription_form_submit($form, &$form_state) {
-  $values = array(
-    'userName' => $form_state['values']['userName'],
-    'lastName' => $form_state['values']['lastName'],
-    'email' => $form_state['values']['email'],
-    'confirm_email' => $form_state['values']['confirm_email']
-  );
-  if ($values['email'] == $values['confirm_email']) {
-    $result = db_select('d7_subscription')
-      ->condition('email', $values['email'])
-      ->countQuery()
-      ->execute()
-      ->fetchField();
-
-    if (!$result) {
-      db_insert('d7_subscription')
-        ->fields(array(
-          'name' => $values['userName'],
-          'last_name' => $values['lastName'],
-          'email' => $values['email']
-        ))
-        ->execute();
-
-      drupal_set_message(
-        t("!name, you subscribed successfully! Congrats!", array('!name' => $values['userName']))
+  drupal_set_message(
+        t('Oki-doki')
       );
-    }
-    else {
-      drupal_set_message(
-        t("!name, your e-mail is already subscribed.", array('!name' => $values['userName'])),
-        'error'
-      );
-    }
-  }
-  else {
-    drupal_set_message(
-      t("!name, please check your e-mail repeat.", array('!name' => $values['userName'])),
-      'error'
-    );
-  }
+
+//  $values = array(
+//    'userName' => $form_state['values']['userName'],
+//    'lastName' => $form_state['values']['lastName'],
+//    'email' => $form_state['values']['email'],
+//    'confirm_email' => $form_state['values']['confirm_email']
+//  );
+//  if ($values['email'] == $values['confirm_email']) {
+//    $result = db_select('d7_subscription')
+//      ->condition('email', $values['email'])
+//      ->countQuery()
+//      ->execute()
+//      ->fetchField();
+//
+//    if (!$result) {
+//      db_insert('d7_subscription')
+//        ->fields(array(
+//          'name' => $values['userName'],
+//          'last_name' => $values['lastName'],
+//          'email' => $values['email']
+//        ))
+//        ->execute();
+//
+//      drupal_set_message(
+//        t("!name, you subscribed successfully! Congrats!", array('!name' => $values['userName']))
+//      );
+//    }
+//    else {
+//      drupal_set_message(
+//        t("!name, your e-mail is already subscribed.", array('!name' => $values['userName'])),
+//        'error'
+//      );
+//    }
+//  }
+//  else {
+//    drupal_set_message(
+//      t("!name, please check your e-mail repeat.", array('!name' => $values['userName'])),
+//      'error'
+//    );
+//  }
 }
