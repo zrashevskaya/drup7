@@ -9,6 +9,11 @@ function stiched_theme($existing, $type, $theme, $path) {
     'template' => 'd7-subscription',
     'path' => drupal_get_path('theme', 'stiched') . '/templates/form',
   );
+  $items['d7_pets_registration_form'] = array(
+    'render element' => 'form',
+    'template' => 'd7-pets-registration',
+    'path' => drupal_get_path('theme', 'stiched') . '/templates/form',
+  );
   return $items;
 }
 

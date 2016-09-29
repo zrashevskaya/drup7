@@ -1,0 +1,5 @@
+name = D7 Pets Registration
+description = This module allows to add registration form for pets owners.
+core = 7.x
+package = My Modules
+dependencies[] = ctools

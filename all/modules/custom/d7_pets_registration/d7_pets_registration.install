@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function d7_pets_registration_schema(){
+  $schema['d7_pets_owners'] = array(
+    'description' => t('The table for owners data.'),
+    'fields' => array(
+      'owner_id' => array(
+        'description' => t('The primary identifier for an owner.'),
+        'type' => 'serial',
+        'not null' => TRUE
+      ),
+      'name' => array(
+        'description' => t('Owner name.'),
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE
+      ),
+      'last_name' => array(
+        'description' => t('Owner last name.'),
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE
+      ),
+      'email' => array(
+        'description' => t('Owner e-mail for login.'),
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE
+      ),
+    ),
+    'unique keys' => array('email' => array('email')),
+    'primary key' => array('owner_id'),
+  );
+  return $schema;
+}
