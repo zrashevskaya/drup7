@@ -5,10 +5,11 @@
   <div class="long input_field"><?php print render($form['email']); ?></div>
   <div
     class="long input_field"><?php print render($form['confirm_email']); ?></div>
-  <div class="short"><?php print render($form['sex']); ?></div>
-  <div class="long input_field"><?php print render($form['age']); ?></div>
-  <div class="long input_field"><?php print render($form['country']); ?></div>
+  <div class="short sex"><?php print render($form['sex']); ?></div>
+  <div class="short input_field"><?php print render($form['age']); ?></div>
+  <div class="long input_field"><div class="country">Choose your country: *</div><?php print render($form['country']); ?></div>
   <div class="long input_field"><?php print render($form['city']); ?></div>
+  <div class="checkbox"><?php print render($form['friendSubscribe']); ?></div>
   <div
     class="long subscribe_button"><?php print render($form['submitButton']); ?></div>
   <?php print drupal_render_children($form); ?>

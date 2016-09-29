@@ -63,13 +63,16 @@ function d7_subscription_help($path, $arg) {
  */
 function d7_subscription_form($form, &$form_state) {
 
+  $form['#attached']['js'][] = drupal_get_path('module', 'd7_subscription')
+    . '/d7_subscription_placeholder.js';
+
   $form['userName'] = array(
     '#type' => 'textfield',
     '#title' => t('What is your name?'),
     '#size' => 20,
     '#maxlength' => 20,
     '#attributes' => array(
-      'placeholder' => t('Name *'),
+      'placeholder' => t('Name '),
     ),
     '#rules' => array(
       array(
@@ -78,11 +81,12 @@ function d7_subscription_form($form, &$form_state) {
         )
       )
     ),
-    '#ajax' => array(
-      'callback' => 'd7_subscription_lastname_callback',
-      'wrapper' => 'lastname',
-      'method' => 'replace',
-      'effect' => 'fade',
+    '#states' => array(
+      'placeholder' => array(
+        ':input[name="lastName"]' => array(
+          'filled' => TRUE,
+        ),
+      ),
     ),
   );
 
@@ -91,10 +95,8 @@ function d7_subscription_form($form, &$form_state) {
     '#title' => t('What is your last name?'),
     '#size' => 30,
     '#maxlength' => 30,
-    '#prefix' => '<div id="lastname">',
-    '#suffix' => '</div>',
     '#attributes' => array(
-      'placeholder' => t('Last name *'),
+      'placeholder' => t('Last Name ')
     ),
     '#rules' => array(
       array(
@@ -103,7 +105,13 @@ function d7_subscription_form($form, &$form_state) {
         )
       )
     ),
-//    '#required' => TRUE,
+    '#states' => array(
+      'placeholder' => array(
+        ':input[name="userName"]' => array(
+          'filled' => TRUE,
+        ),
+      ),
+    ),
   );
 
   $form['sex'] = array(
@@ -120,7 +128,7 @@ function d7_subscription_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('How old are you?'),
     '#attributes' => array(
-      'placeholder' => t('Your age'),
+      'placeholder' => t('Your age *'),
     ),
     '#states' => array(
       'visible' => array(
@@ -129,17 +137,17 @@ function d7_subscription_form($form, &$form_state) {
         ),
       ),
     ),
+    '#rules' => array(
+      array(
+        'rule' => 'numeric',
+        'error' => t('Invalid age format. Use only numbers.')
+      )
+    ),
   );
-
   $form['country'] = array(
     '#type' => 'select',
-    '#title' => t('Choose your country'),
-    '#options' => array(
-      'ukraine' => t('Ukraine'),
-      'usa' => t('USA'),
-      'utopia' => t('Utopia'),
-    ),
-    '#default_value' => t(variable_get('country', 'ukraine')),
+    '#title' => t('Choose your country:'),
+    '#options' => country_get_list(),
     '#suffix' => '<div id="cities"></div>',
     '#ajax' => array(
       'callback' => 'd7_subscription_city_callback',
@@ -147,6 +155,7 @@ function d7_subscription_form($form, &$form_state) {
       'method' => 'replace',
       'effect' => 'fade',
     ),
+    '#required' => TRUE,
   );
 
   $form['email'] = array(
@@ -183,6 +192,18 @@ function d7_subscription_form($form, &$form_state) {
     '#required' => TRUE,
   );
 
+  $form['friendSubscribe'] = array(
+    '#type' => 'checkbox',
+    '#suffix' => '<div id="friend"></div>',
+    '#title' => t('Would you like to subscribe your friend?'),
+    '#ajax' => array(
+      'callback' => 'd7_subscription_friend_callback',
+      'effect' => 'fade',
+    ),
+    '#default_value' => FALSE,
+  );
+
+
   $form['submitButton'] = array(
     '#type' => 'submit',
     '#value' => t('Subscribe!'),
@@ -191,52 +212,38 @@ function d7_subscription_form($form, &$form_state) {
   return $form;
 }
 
-function d7_subscription_lastname_callback($form, &$form_state){
-  if (!empty($form_state['values']['userName'])){
-    $form['lastName'] = array(
+function d7_subscription_friend_callback($form, &$form_state) {
+  if (!empty($form_state['values']['friendSubscribe'])) {
+    $form['friendEmail'] = array(
       '#type' => 'textfield',
-      '#title' => t('What is your last name?'),
+      '#title' => t("What is your friend's e-mail?"),
       '#size' => 30,
       '#maxlength' => 30,
-      '#prefix' => '<div id="lastname">',
+      '#prefix' => '<div id="friend">',
       '#suffix' => '</div>',
       '#attributes' => array(
-        'placeholder' => t('Last name *'),
+        'placeholder' => t("Friend's E-mail *"),
       ),
       '#rules' => array(
         array(
-          'rule' => 'regexp[/^[a-zA-Z ]*$/]',
-          'error' => t('Only letters and white spaces allowed in Your Last Name.'
-          )
+          'rule' => 'email',
+          'error' => t('Invalid email format.')
         )
       ),
-    '#required' => TRUE,
+      '#required' => TRUE,
     );
+    $output = render($form['friendEmail']);
   }
-  else{
-    $form['lastName'] = array(
-      '#type' => 'textfield',
-      '#title' => t('What is your last name?'),
-      '#size' => 30,
-      '#maxlength' => 30,
-      '#prefix' => '<div id="lastname">',
-      '#suffix' => '</div>',
-      '#attributes' => array(
-        'placeholder' => t('Last name *'),
-      ),
-      '#rules' => array(
-        array(
-          'rule' => 'regexp[/^[a-zA-Z ]*$/]',
-          'error' => t('Only letters and white spaces allowed in Your Last Name.'
-          )
-        )
-      ),
-    );
+  else {
+    $output = '<div id="friend"></div>';
   }
+  $action = array();
+  $action[] = ajax_command_replace('#friend', $output);
+  return array('#type' => 'ajax', '#commands' => $action);
 }
 
-function d7_subscription_city_callback($form, &$form_state){
-  if ($form_state['values']['country'] == 'ukraine'){
+function d7_subscription_city_callback($form, &$form_state) {
+  if ($form_state['values']['country'] == 'UA') {
     $form['city'] = array(
       '#type' => 'select',
       '#title' => t('Choose your city'),
@@ -249,7 +256,7 @@ function d7_subscription_city_callback($form, &$form_state){
       ),
     );
   }
-  elseif ($form_state['values']['country'] == 'usa'){
+  elseif ($form_state['values']['country'] == 'US') {
     $form['city'] = array(
       '#type' => 'select',
       '#title' => t('Choose your city'),
@@ -262,8 +269,9 @@ function d7_subscription_city_callback($form, &$form_state){
       ),
     );
   }
-  else{
+  else {
     $form['city'] = array(
+      '#type' => 'markup',
       '#prefix' => '<div id="cities">',
       '#suffix' => '</div>',
     );
@@ -271,13 +279,53 @@ function d7_subscription_city_callback($form, &$form_state){
   return $form['city'];
 }
 
+///**
+// * Implements hook_form_validate().
+// */
+//function d7_subscription_form_validate($form, &$form_state) {
+////  $values = array(
+////    'sex' => $form_state['values']['sex'],
+////    'age' => $form_state['values']['age'],
+////    'country' => $form_state['values']['country'],
+////    'city' => $form_state['values']['city'],
+////  );
+//  if (!empty($form_state['values']['userName'])&&empty($form_state['values']['lastName'])){
+//    drupal_set_message(t("Please enter your Last Name."), 'error');
+//  }
+//  elseif (!empty($form_state['values']['lastName'])&&empty($form_state['values']['userName'])){
+//    drupal_set_message(t("Please enter your Name."), 'error');
+//  }
+//  elseif ($form_state['values']['sex'] == 'man' && empty($form_state['values']['age'])){
+//    drupal_set_message(t("Please enter your age."), 'error');
+//  }
+//  elseif (($form_state['values']['country'] == 'UA'&&empty($form_state['values']['city']))||($form_state['values']['country'] == 'US'&&empty($form_state['values']['city']))){
+//    drupal_set_message(t("Please choose your city."), 'error');
+//  }
+//}
+
 /**
  * Implements hook_form_submit().
  */
 function d7_subscription_form_submit($form, &$form_state) {
-  drupal_set_message(
-        t('Oki-doki')
-      );
+  if (!empty($form_state['values']['userName']) && empty($form_state['values']['lastName'])) {
+    drupal_set_message(t("Please enter your Last Name."), 'error');
+  }
+  elseif (!empty($form_state['values']['lastName']) && empty($form_state['values']['userName'])) {
+    drupal_set_message(t("Please enter your Name."), 'error');
+  }
+  elseif ($form_state['values']['sex'] == 'man' && empty($form_state['values']['age'])) {
+    drupal_set_message(t("Please enter your age."), 'error');
+  }
+  elseif (($form_state['values']['country'] == 'UA' && empty($form_state['values']['city'])) || ($form_state['values']['country'] == 'US' && empty($form_state['values']['city']))) {
+    drupal_set_message(t("Please choose your city."), 'error');
+  }
+  elseif (!empty($form_state['values']['friendSubscribe']) && empty($form_state['values']['friendEmail'])) {
+    drupal_set_message(t("Please enter your friend's email."), 'error');
+  }
+  else {
+    drupal_set_message(
+      t('Oki-doki')
+    );
 
 //  $values = array(
 //    'userName' => $form_state['values']['userName'],
@@ -318,4 +366,5 @@ function d7_subscription_form_submit($form, &$form_state) {
 //      'error'
 //    );
 //  }
+  }
 }

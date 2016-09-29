@@ -20,7 +20,7 @@
     margin: 12px 0 2px;
 }
 
-#content .back .input_field .form-text {
+#content .back .input_field .form-text, #content .back .input_field .form-select, #content .back #friend .form-text {
     display: inline-block;
     height: 42px;
     width: 100%;
@@ -32,11 +32,25 @@
     background: none;
 }
 
-#content .back .input_field label {
+#content .back .input_field label, #content .back #friend label {
     display: none;
 }
+#content .back .country {
+    color: #929292;
+}
+#content .back .form-item-sex{
+    color: #929292;
+    display: inline-block;
+    margin-right: 15px;
+}
 
-#content .back .input_field .form-text:focus {
+#content .back .form-type-checkbox label{
+    color: #929292;
+    display: inline-block;
+    font-weight: bold;
+}
+
+#content .back .input_field .form-text:focus, #content .back .input_field .form-select:focus, #content .back #friend .form-text:focus {
     border: 1px solid #1ab188;
 }
 
@@ -54,13 +68,17 @@
     cursor: pointer;
 }
 
-#content .back .short.input_field {
+#content .back .short.input_field, #content .back .short {
 width: 182px;
 display: inline-block;
 }
 
-.back #first.short.input_field {
+.back #first.short.input_field, .back .short.sex {
     margin-right: 14px;
+}
+
+.back .short.sex{
+    height: 82px;
 }
 
 #messages .section.notices {
