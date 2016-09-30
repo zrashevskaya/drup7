@@ -34,6 +34,14 @@ function d7_pets_registration_menu() {
     'access arguments' => array('administer site configuration'),
   );
 
+  $items['d7_pets_owners/%/update'] = array(
+    'title callback' => 'd7_pets_owners_update_page_title',
+    'title arguments' => array(1),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d7_pets_owners_update_form', 1),
+    'access arguments' => array('administer site configuration'),
+  );
+
   return $items;
 }
 
@@ -203,7 +211,7 @@ function d7_pets_registration_form_submit($form, &$form_state) {
 }
 
 function d7_pets_owners_table_page() {
-  $header = array(t('ID'), t('Name'), t('Last Name'), t('E-mail'), t('Action'));
+  $header = array(t('ID'), t('Name'), t('Last Name'), t('E-mail'), t('Delete'), t('Edit'));
   $rows = array();
   $query = db_select('d7_pets_owners')
     ->fields('d7_pets_owners')
@@ -214,6 +222,7 @@ function d7_pets_owners_table_page() {
       $value->name,
       $value->last_name,
       $value->email,
+      l(t('Edit'), "d7_pets_owners/".$value->owner_id."/update"),
       l(t('Delete'), "d7_pets_owners/".$value->owner_id."/delete"),
     );
   }
@@ -224,8 +233,9 @@ function d7_pets_owners_delete_page_title($id) {
   $name = db_select('d7_pets_owners', 't')
     ->fields('t', array('name'))
     ->condition('owner_id', $id)
-    ->execute();
-    return t('Are you sure you want to delete user "@num"?', array('@num' => $name));
+    ->execute()
+    ->fetchField();
+  return t('Are you sure you want to delete user "!num"?', array('!num' => $name));
 }
 
 function d7_pets_owners_delete_form($form, $form_state) {
@@ -242,15 +252,199 @@ function d7_pets_owners_delete_form($form, $form_state) {
 
 function d7_pets_owners_delete_form_submit($form, &$form_state) {
   $id = $form_state['build_info']['args'][0];
-  $result = db_delete('d7_pet_owners')
+  $result = db_delete('d7_pets_owners')
     ->condition('owner_id', $id)
     ->execute();
-  $placeholders = array('@id' => $id);
+  $placeholders = array('!id' => $id);
   if ($result) {
-    drupal_set_message(t('Record @id successfully removed.', $placeholders));
+    drupal_set_message(t('Record !id successfully removed.', $placeholders));
   }
   else {
-    drupal_set_message(t('Record @id is undefined.', $placeholders), 'warning');
+    drupal_set_message(t('Record !id is undefined.', $placeholders), 'warning');
   }
   $form_state['redirect'] = 'd7_pets_owners_table';
+}
+
+function d7_pets_owners_update_page_title($id) {
+  $name = db_select('d7_pets_owners', 't')
+    ->fields('t', array('name'))
+    ->condition('owner_id', $id)
+    ->execute()
+    ->fetchField();
+  if ($name) {
+    return t('Are you sure you want to update user "!num"?', array('!num' => $name));
+  }
+  else {
+    return t('User not found.');
+  }
+}
+
+function d7_pets_owners_update_form($form, $form_state) {
+  $form = array();
+  $id = $form_state['build_info']['args'][0];
+  $data = db_select('d7_pets_owners', 't')
+    ->fields('t')
+    ->condition('owner_id', $id)
+    ->execute()
+    ->fetchAssoc();
+
+  if (empty($data) || empty($data['owner_id'])) {
+    $placeholders = array(
+      '!back' => l(t('Go back'), 'd7_pets_owners_table'),
+    );
+    $form['text'] = array(
+      '#markup' => t('Undefined user. !back.', $placeholders),
+    );
+    return $form;
+  }
+
+  $form['owner_id'] = array(
+    '#title' => t('Owner id'),
+    '#type' => 'hidden',
+    '#maxlength' => 11,
+    '#default_value' => $data['owner_id'],
+  );
+
+
+
+  $form['userName'] = array(
+    '#type' => 'textfield',
+    '#title' => t('What is your name?'),
+    '#size' => 20,
+    '#maxlength' => 20,
+    '#default_value' => $data['name'],
+    '#attributes' => array(
+      'placeholder' => t('Name *'),
+    ),
+    '#rules' => array(
+      array(
+        'rule' => 'regexp[/^[a-zA-Z ]*$/]',
+        'error' => t('Only letters and white spaces allowed in Your Name.'
+        )
+      )
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['lastName'] = array(
+    '#type' => 'textfield',
+    '#title' => t('What is your last name?'),
+    '#size' => 30,
+    '#maxlength' => 30,
+    '#default_value' => $data['last_name'],
+    '#attributes' => array(
+      'placeholder' => t('Last name *'),
+    ),
+    '#rules' => array(
+      array(
+        'rule' => 'regexp[/^[a-zA-Z ]*$/]',
+        'error' => t('Only letters and white spaces allowed in Your Last Name.'
+        )
+      )
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('What is your e-mail?'),
+    '#size' => 30,
+    '#maxlength' => 30,
+    '#default_value' => $data['email'],
+    '#attributes' => array(
+      'placeholder' => t('E-mail *'),
+    ),
+    '#rules' => array(
+      array(
+        'rule' => 'email',
+        'error' => t('Invalid email format.'
+        )
+      )
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['confirm_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Please, repeat your e-mail.'),
+    '#size' => 30,
+    '#maxlength' => 30,
+    '#attributes' => array(
+      'placeholder' => t('Repeate E-mail *'),
+    ),
+    '#rules' => array(
+      array(
+        'rule' => 'email',
+        'error' => t('Invalid email format.'
+        )
+      )
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update'),
+  );
+
+  $form['actions']['cancel'] = array(
+    '#markup' => l(t('Cancel '), 'd7_pets_owners_table')
+  );
+
+  $form['actions']['delete'] = array(
+    '#markup' => l(t('Delete'), "d7_pets_owners/".$data['owner_id']."/delete")
+  );
+
+  return $form;
+}
+
+function d7_pets_owners_update_form_submit($form, $form_state){
+  $id = $form_state['build_info']['args'][0];
+  $values = array(
+    'userName' => $form_state['values']['userName'],
+    'lastName' => $form_state['values']['lastName'],
+    'email' => $form_state['values']['email'],
+    'confirm_email' => $form_state['values']['confirm_email']
+  );
+  if ($values['email'] == $values['confirm_email']) {
+    $check = db_select('d7_pets_owners')
+      ->condition('email', $values['email'])
+      ->condition('owner_id', $id, '<>')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if (!$check) {
+      $result = db_update('d7_pets_owners')
+        ->fields(array(
+          'name' => $values['userName'],
+          'last_name' => $values['lastName'],
+          'email' => $values['email'],
+        ))
+        ->condition('owner_id', $id)
+        ->execute();
+
+      if ($result) {
+        drupal_set_message(t('Data updated successfully'));
+        drupal_goto('d7_pets_owners_table');
+      }
+      else {
+        drupal_set_message(t('Data is not updated'), 'warning');
+      }
+    }
+    else{
+      drupal_set_message(
+        t("This e-mail is used by another user."),
+        'error'
+      );
+    }
+  }
+  else {
+    drupal_set_message(
+      t("Please check e-mail repeat."),
+      'warning'
+    );
+  }
 }
