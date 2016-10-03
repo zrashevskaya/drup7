@@ -13,6 +13,7 @@ $plugin = array(
  */
 function pets_registration_layout_content_type_render($subtype, $conf, $args, $context) {
   $block = new stdClass();
-  $block->content = drupal_get_form('d7_pets_registration_form');
+  $block->content = drupal_get_form('d7_pets_owners_update_form');
+//  $block->content = drupal_get_form('d7_pets_registration_form');
   return $block;
 }
