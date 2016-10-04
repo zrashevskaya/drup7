@@ -36,3 +36,23 @@ function d7_pets_registration_schema(){
   );
   return $schema;
 }
+
+function d7_pets_registration_update_7001(){
+  db_add_field('d7_pets_owners', 'pet_type', [
+    'type' => 'varchar',
+    'length' => 20,
+    'not null' => TRUE,
+  ]);
+}
+
+/**
+ * Implements date of birth into database table.
+ */
+function d7_pets_registration_update_7002(){
+  db_add_field('d7_pets_owners', 'owner_birthday', [
+    'description' => t('Owner date of birth.'),
+    'type' => 'varchar',
+    'mysql_type' => 'date',
+    'not null' => TRUE,
+  ]);
+}

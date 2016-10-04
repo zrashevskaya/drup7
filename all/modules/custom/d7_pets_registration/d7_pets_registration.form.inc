@@ -96,6 +96,15 @@ function d7_pets_owners_update_form($form, $form_state, $id = NULL) {
     '#required' => TRUE,
   ];
 
+  $voc = taxonomy_vocabulary_machine_name_load('pets');
+  $form['pets'] = [
+    '#type' => 'select',
+    '#title' => t('Choose your pet type'),
+    '#options' => d7_pets_registration_selectbox_contents($voc->vid),
+    '#required' => TRUE,
+  ];
+
+
   $form['email'] = [
     '#type' => 'textfield',
     '#title' => t('What is your e-mail?'),
@@ -244,3 +253,4 @@ function d7_pets_owners_update_form_submit($form, $form_state) {
     );
   }
 }
+
