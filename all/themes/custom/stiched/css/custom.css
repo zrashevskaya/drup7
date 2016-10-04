@@ -1,3 +1,8 @@
+h1#page-title.title{
+    margin: 0 auto;
+    text-align: center;
+}
+
 #content .back {
     background: #24323d;
     width: 382px;
@@ -30,6 +35,7 @@
     padding-left: 10px;
     border: 1px solid #798790;
     background: none;
+    font-size: 16px;
 }
 
 #content .back .input_field label, #content .back #friend label {
@@ -54,7 +60,7 @@
     border: 1px solid #1ab188;
 }
 
-#content .back .subscribe_button .form-submit {
+#content .back .subscribe_button .form-submit, #content .back #edit-submit.form-submit {
     height: 57px;
     width: 100%;
     color: #fff;
@@ -63,7 +69,7 @@
     border: none;
 }
 
-#content .back .subscribe_button .form-submit:hover {
+#content .back .subscribe_button .form-submit:hover, #content .back #edit-submit.form-submit:hover {
     background: #09a077;
     cursor: pointer;
 }
@@ -84,4 +90,13 @@ display: inline-block;
 #messages .section.notices {
     width: 100%;
     padding: 0;
+}
+
+#content .back #edit-actions a{
+    font-size: 16px;
+    color: white;
+    text-decoration: none;
+}
+#content .back #edit-actions a:last-child{
+    float: right;
 }

@@ -16,7 +16,7 @@ function d7_pets_owners_delete_form($form, $form_state, $id) {
   ];
 
   $form['cancel'] = [
-    '#markup' => l(t('Cancel'), 'd7_pets_owners_table'),
+    '#markup' => l(t('Cancel'), 'pet-owners'),
   ];
   return $form;
 }
@@ -33,7 +33,7 @@ function d7_pets_owners_delete_form_submit($form, &$form_state) {
   else {
     drupal_set_message(t('Record !id is undefined.', $placeholders), 'warning');
   }
-  $form_state['redirect'] = 'd7_pets_owners_table';
+  drupal_goto('pet-owners');
 }
 
 function d7_pets_owners_update_form($form, $form_state, $id = NULL) {
@@ -143,7 +143,7 @@ function d7_pets_owners_update_form($form, $form_state, $id = NULL) {
 
   $form['actions']['cancel'] = [
     '#type' => $id ? 'markup' : 'hiddedn',
-    '#markup' => l(t('Cancel '), 'd7_pets_owners_table')
+    '#markup' => l(t('Cancel '), 'pet-owners')
   ];
 
   $form['actions']['delete'] = [
@@ -224,7 +224,7 @@ function d7_pets_owners_update_form_submit($form, $form_state) {
 
     if ($result) {
       drupal_set_message(t('Data updated successfully'));
-      drupal_goto('d7_pets_owners_table');
+      drupal_goto('pet-owners');
     }
     else {
       drupal_set_message(t('Data is not updated'), 'warning');
