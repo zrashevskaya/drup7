@@ -15,8 +15,9 @@ function d7_pets_registration_create_form($form) {
 }
 
 
-function d7_pets_registration_selectbox_contents($vid) {
-  $terms = taxonomy_get_tree($vid);
+function d7_pets_registration_selectbox_contents($voc) {
+  $vocabulary = taxonomy_vocabulary_machine_name_load($voc);
+  $terms = taxonomy_get_tree($vocabulary->vid);
 
   foreach ($terms as $data) {
     $output[$data->tid] = $data->name;

@@ -72,6 +72,51 @@ function d7_pets_registration_views_data() {
       'handler' => 'views_handler_argument_string',
     ],
   ];
+
+  $data['d7_pets_owners']['owner_birthday']=[
+    'title' => t('Owner birthday'),
+    'help' => t('Owner birthday.'),
+    'field' => [
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ],
+    'sort' => [
+      'handler' => 'views_handler',
+    ],
+    'filter' => [
+      'handler' => 'views_handler_filter',
+    ],
+    'argument' => [
+      'handler' => 'views_handler_argument',
+    ],
+  ];
+
+  $data['d7_pets_owners']['pet_type']=[
+    'title' => t('Pet type'),
+    'help' => t('Pet type.'),
+    'field' => [
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ],
+    'sort' => [
+      'handler' => 'views_handler_sort',
+    ],
+    'filter' => [
+      'handler' => 'views_handler_filter_string',
+    ],
+    'argument' => [
+      'handler' => 'views_handler_argument_string',
+    ],
+    'relationship' => [
+      'base' => 'taxonomy_term_data',
+      'base field' => 'tid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('pets types'),
+      'relationship table' => 'd7_pets_owners',
+      'relationship field' => 'pet_type',
+    ],
+  ];
+
   $data['d7_pets_owners']['email']=[
     'title' => t('Email'),
     'help' => t('Email of pets owner.'),
@@ -89,11 +134,5 @@ function d7_pets_registration_views_data() {
       'handler' => 'views_handler_argument_string',
     ],
   ];
-//  $data['d7_pets_owners']['owner_id']=[
-//
-//  ];
-//  $data['d7_pets_owners']['owner_id']=[
-//
-//  ];
 return $data;
 }

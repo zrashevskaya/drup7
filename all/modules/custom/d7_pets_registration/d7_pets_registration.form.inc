@@ -96,11 +96,26 @@ function d7_pets_owners_update_form($form, $form_state, $id = NULL) {
     '#required' => TRUE,
   ];
 
-  $voc = taxonomy_vocabulary_machine_name_load('pets');
+  $form['ownerBirthday'] = [
+    '#type' => 'date',
+    '#title' => t('What is your birthday?'),
+    '#required' => TRUE,
+  ];
+
+  if ($id){
+    $date = explode('-',$id['owner_birthday']);
+    $form['ownerBirthday']['#default_value'] = [
+      'year' => intval($date[0]),
+      'month' => intval($date[1]),
+      'day' => intval($date[2])
+    ];
+  }
+
   $form['pets'] = [
     '#type' => 'select',
     '#title' => t('Choose your pet type'),
-    '#options' => d7_pets_registration_selectbox_contents($voc->vid),
+    '#options' => d7_pets_registration_selectbox_contents('pets'),
+    '#default_value' => $id ? $id['pet_type'] : '',
     '#required' => TRUE,
   ];
 
@@ -167,13 +182,23 @@ function d7_pets_owners_update_form($form, $form_state, $id = NULL) {
  * Implements hook_validate().
  */
 function d7_pets_owners_update_form_validate($form, &$form_state) {
+  $datefields = $form_state['values']['ownerBirthday'];
+  $birthday = "{$datefields['year']}-{$datefields['month']}-{$datefields['day']}";
   $values = [
     'userName' => trim($form_state['values']['userName']),
     'lastName' => trim($form_state['values']['lastName']),
+    'ownerBirthday' => $birthday,
+    'pets' => trim($form_state['values']['pets']),
     'email' => trim($form_state['values']['email']),
     'confirm_email' => trim($form_state['values']['confirm_email'])
   ];
-  if ($values['email'] == $values['confirm_email']) {
+
+  if (strtotime($birthday)>strtotime(date('Y-m-d'))){
+    form_set_error('ownerBirthday',
+      t("This date is incorrect. It refers to future.")
+    );
+  }
+  elseif ($values['email'] == $values['confirm_email']) {
     if (isset($form_state['values']['owner_id'])) {
       $values ['owner_id'] = $form_state['values']['owner_id'];
       $check = db_select('d7_pets_owners')
@@ -188,6 +213,22 @@ function d7_pets_owners_update_form_validate($form, &$form_state) {
           t("This e-mail is used by another user.")
         );
       }
+      else{
+        $person = db_select('d7_pets_owners')
+          ->condition('name', $values['userName'])
+          ->condition('last_name', $values['lastName'])
+          ->condition('owner_birthday', $values['ownerBirthday'])
+          ->condition('owner_id', $values['owner_id'], '<>')
+          ->countQuery()
+          ->execute()
+          ->fetchField();
+
+        if ($person) {
+          form_set_error('email',
+            t("There is a user with the same Name, Last Name and Birthday.")
+          );
+        }
+      }
     }
     else {
       $result = db_select('d7_pets_owners')
@@ -200,6 +241,21 @@ function d7_pets_owners_update_form_validate($form, &$form_state) {
         form_set_error('email',
           t("!name, your e-mail is already registered.", ['!name' => $values['userName']])
         );
+      }
+      else{
+        $person = db_select('d7_pets_owners')
+          ->condition('name', $values['userName'])
+          ->condition('last_name', $values['lastName'])
+          ->condition('owner_birthday', $values['ownerBirthday'])
+          ->countQuery()
+          ->execute()
+          ->fetchField();
+
+        if ($person) {
+          form_set_error('email',
+            t("There is a user with the same Name, Last Name and Birthday.")
+          );
+        }
       }
     }
   }
@@ -214,9 +270,13 @@ function d7_pets_owners_update_form_validate($form, &$form_state) {
  * Implements hook_submit().
  */
 function d7_pets_owners_update_form_submit($form, $form_state) {
+  $datefields = $form_state['values']['ownerBirthday'];
+  $birthday = "{$datefields['year']}-{$datefields['month']}-{$datefields['day']}";
   $values = [
     'userName' => trim($form_state['values']['userName']),
     'lastName' => trim($form_state['values']['lastName']),
+    'ownerBirthday' => $birthday,
+    'pets' => trim($form_state['values']['pets']),
     'email' => trim($form_state['values']['email']),
     'confirm_email' => trim($form_state['values']['confirm_email'])
   ];
@@ -226,6 +286,8 @@ function d7_pets_owners_update_form_submit($form, $form_state) {
       ->fields([
         'name' => $values['userName'],
         'last_name' => $values['lastName'],
+        'owner_birthday' => $values['ownerBirthday'],
+        'pet_type' => $values['pets'],
         'email' => $values['email'],
       ])
       ->condition('owner_id', $values['owner_id'])
@@ -244,6 +306,8 @@ function d7_pets_owners_update_form_submit($form, $form_state) {
       ->fields([
         'name' => $values['userName'],
         'last_name' => $values['lastName'],
+        'owner_birthday' => $values['ownerBirthday'],
+        'pet_type' => $values['pets'],
         'email' => $values['email']
       ])
       ->execute();

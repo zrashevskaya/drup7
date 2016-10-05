@@ -4,6 +4,8 @@ function d7_pets_owners_table_page() {
     t('ID'),
     t('Name'),
     t('Last Name'),
+    t('Birthday'),
+    t('Pet type'),
     t('E-mail'),
     t('Delete'),
     t('Edit')
@@ -12,11 +14,14 @@ function d7_pets_owners_table_page() {
   $query = db_select('d7_pets_owners')
     ->fields('d7_pets_owners')
     ->execute();
+  $petList = d7_pets_registration_selectbox_contents('pets');
   foreach ($query as $value) {
     $rows[] = [
       $value->owner_id,
       htmlspecialchars($value->name),
       htmlspecialchars($value->last_name),
+      htmlspecialchars($value->owner_birthday),
+      $petList[($value->pet_type)],
       htmlspecialchars($value->email),
       l(t('Edit'), "d7_pets_owners/" . $value->owner_id . "/update"),
       l(t('Delete'), "d7_pets_owners/" . $value->owner_id . "/delete"),
