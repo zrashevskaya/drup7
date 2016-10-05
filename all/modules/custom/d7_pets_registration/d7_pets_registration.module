@@ -88,3 +88,10 @@ function d7_pets_registration_help($path, $arg) {
 function d7_pets_registration_views_api() {
   return array('api' => 3);
 }
+
+/**
+ * Implements hook_flush_caches().
+ */
+function d7_pets_registration_flush_caches() {
+  return array('cache_d7_pets_registration');
+}

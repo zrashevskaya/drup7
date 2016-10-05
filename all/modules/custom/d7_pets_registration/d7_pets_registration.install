@@ -63,3 +63,11 @@ function d7_pets_registration_update_7002(){
 function d7_pets_registration_update_7003(){
   db_add_index('d7_pets_owners', 'personality', ['name', 'last_name', 'owner_birthday']);
 }
+
+/**
+ * Implements new table for cache.
+ */
+function d7_pets_registration_update_7004(){
+  db_create_table('cache_d7_pets_registration', drupal_get_schema_unprocessed('system', 'cache'));
+  return 'Implements new table for cache.';
+}

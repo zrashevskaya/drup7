@@ -11,23 +11,35 @@ function d7_pets_owners_table_page() {
     t('Edit')
   ];
   $rows = [];
-  $query = db_select('d7_pets_owners')
+  $cache_id = 'd7_pets_registration_table';
+  $cache = cache_get($cache_id, 'cache_d7_pets_registration');
+  if (!empty($cache->data)) {
+    $array = $cache->data;
+
+  }
+  else {
+    $query = db_select('d7_pets_owners')
     ->fields('d7_pets_owners')
     ->execute();
-  $petList = d7_pets_registration_selectbox_contents('pets');
-  foreach ($query as $value) {
-    $rows[] = [
-      $value->owner_id,
-      htmlspecialchars($value->name),
-      htmlspecialchars($value->last_name),
-      htmlspecialchars($value->owner_birthday),
-      $petList[($value->pet_type)],
-      htmlspecialchars($value->email),
-      l(t('Edit'), "d7_pets_owners/" . $value->owner_id . "/update"),
-      l(t('Delete'), "d7_pets_owners/" . $value->owner_id . "/delete"),
-    ];
+
+    $petList = d7_pets_registration_selectbox_contents('pets');
+    foreach ($query as $value) {
+      $rows[] = [
+        $value->owner_id,
+        htmlspecialchars($value->name),
+        htmlspecialchars($value->last_name),
+        htmlspecialchars($value->owner_birthday),
+        $petList[($value->pet_type)],
+        htmlspecialchars($value->email),
+        l(t('Edit'), "d7_pets_owners/" . $value->owner_id . "/update"),
+        l(t('Delete'), "d7_pets_owners/" . $value->owner_id . "/delete"),
+      ];
+    }
+    $array = theme('table', ['header' => $header, 'rows' => $rows]);
+
+    cache_set($cache_id, $array, 'cache_d7_pets_registration');
   }
-  return theme('table', ['header' => $header, 'rows' => $rows]);
+  return $array;
 }
 
 function d7_pets_owners_delete_page_title($id) {
