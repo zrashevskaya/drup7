@@ -28,6 +28,9 @@ function d7_pets_owners_delete_form_submit($form, &$form_state) {
     ->execute();
   $placeholders = ['!id' => $form_state['build_info']['args'][0]['name']];
   if ($result) {
+    cache_clear_all('d7_pets_registration_table', 'cache_d7_pets_registration');
+    cache_clear_all('owners_by_pets', 'cache_views_data', TRUE);
+    cache_clear_all('pet_owners', 'cache_views_data', TRUE);
     drupal_set_message(t('Record !id successfully removed.', $placeholders));
   }
   else {
@@ -294,6 +297,9 @@ function d7_pets_owners_update_form_submit($form, $form_state) {
       ->execute();
 
     if ($result) {
+      cache_clear_all('d7_pets_registration_table', 'cache_d7_pets_registration');
+      cache_clear_all('owners_by_pets', 'cache_views_data', TRUE);
+      cache_clear_all('pet_owners', 'cache_views_data', TRUE);
       drupal_set_message(t('Data updated successfully'));
       drupal_goto('pet-owners');
     }
@@ -311,7 +317,9 @@ function d7_pets_owners_update_form_submit($form, $form_state) {
         'email' => $values['email']
       ])
       ->execute();
-
+    cache_clear_all('d7_pets_registration_table', 'cache_d7_pets_registration');
+    cache_clear_all('owners_by_pets', 'cache_views_data', TRUE);
+    cache_clear_all('pet_owners', 'cache_views_data', TRUE);
     drupal_set_message(
       t("!name, you have registered successfully! Congrats!", ['!name' => $values['userName']])
     );
