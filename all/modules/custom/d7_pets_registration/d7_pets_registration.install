@@ -71,3 +71,58 @@ function d7_pets_registration_update_7004(){
   db_create_table('cache_d7_pets_registration', drupal_get_schema_unprocessed('system', 'cache'));
   return 'Implements new table for cache.';
 }
+
+/**
+ * Delete index for field 'name', 'last_name' and 'owners_birthday'.
+ */
+function d7_pets_registration_update_7005(){
+  db_drop_index('d7_pets_owners', 'personality');
+}
+/**
+ * Implements index for field 'name', 'last_name' and 'owners_birthday', change type of field.
+ */
+function d7_pets_registration_update_7006(){
+  db_change_field('d7_pets_owners', 'owner_birthday', 'owner_birthday', [
+    'type' => 'varchar',
+    'mysql_type' => 'date',
+    'not null' => TRUE,
+  ]);
+  db_add_index('d7_pets_owners', 'personality', ['name', 'last_name', 'owner_birthday']);
+}
+
+/**
+ * Delete index for field 'name', 'last_name' and 'owners_birthday'.
+ */
+function d7_pets_registration_update_7007(){
+  db_drop_index('d7_pets_owners', 'personality');
+}
+
+///**
+// * Implements index for field 'name', 'last_name' and 'owners_birthday', change type of field.
+// */
+//function d7_pets_registration_update_7008(){
+//  db_change_field('d7_pets_owners', 'owner_birthday', 'owner_birthday', [
+//    'type' =>'date',
+//    'not null' => TRUE,
+//  ]);
+//  db_add_index('d7_pets_owners', 'personality', ['name', 'last_name', 'owner_birthday']);
+//}
+
+/**
+ * Delete index for field 'name', 'last_name' and 'owners_birthday'.
+ */
+function d7_pets_registration_update_7009(){
+  db_drop_index('d7_pets_owners', 'personality');
+}
+
+/**
+ * Implements index for field 'name', 'last_name' and 'owners_birthday', change type of field.
+ */
+function d7_pets_registration_update_7010(){
+  db_change_field('d7_pets_owners', 'owner_birthday', 'owner_birthday', [
+    'type' => 'varchar',
+    'mysql_type' => 'date',
+    'not null' => TRUE,
+  ]);
+  db_add_index('d7_pets_owners', 'personality', ['name', 'last_name', 'owner_birthday']);
+}

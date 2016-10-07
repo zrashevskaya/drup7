@@ -14,20 +14,22 @@ module_load_include('inc', 'd7_pets_registration', 'd7_pets_registration.pages')
 function d7_pets_registration_menu() {
   $items = [];
 
-  $items['d7_pets_registration'] = [
+  $items['d7_pets_menu/d7_pets_registration'] = [
     'title' => 'Pets registration',
 //    'description' => 'A form to registry your pets.',
 //    'page callback' => 'd7_pets_registration_create_form',
 //    'page arguments' => ['d7_pets_registration_form'],
     'page callback' => 'drupal_get_form',
     'page arguments' => ['d7_pets_owners_update_form'],
-    'access arguments' => ['access d7_pets_registration content']
+    'access arguments' => ['access d7_pets_registration content'],
+    'type' => MENU_LOCAL_TASK
   ];
 
-  $items['d7_pets_owners_table'] = [
+  $items['d7_pets_menu/d7_pets_owners_table'] = [
     'title' => 'Table with pets owners data.',
     'page callback' => 'd7_pets_owners_table_page',
     'access arguments' => ['administer site configuration'],
+    'type' => MENU_LOCAL_TASK
   ];
 
   $items['d7_pets_owners/%id/delete'] = [
@@ -44,6 +46,20 @@ function d7_pets_registration_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => ['d7_pets_owners_update_form', 1],
     'access arguments' => ['administer site configuration'],
+  ];
+  $items['d7_pets_menu'] = [
+    'title' => 'Pets owners menu',
+    'page callback' => 'd7_pets_menu_callback',
+    'type' => MENU_NORMAL_ITEM,
+    'access callback' => TRUE,
+  ];
+
+  $items['d7_pets_registration_color'] = [
+    'title' => 'Pets owners menu change color',
+    'page callback' => 'd7_pets_registration_ajax_menu_callback',
+    'type' => MENU_CALLBACK,
+    'access callback' => TRUE,
+    'delivery callback' => 'ajax_deliver',
   ];
 
   return $items;

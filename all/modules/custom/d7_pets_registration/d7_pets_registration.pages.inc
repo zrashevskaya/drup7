@@ -19,8 +19,8 @@ function d7_pets_owners_table_page() {
   }
   else {
     $query = db_select('d7_pets_owners')
-    ->fields('d7_pets_owners')
-    ->execute();
+      ->fields('d7_pets_owners')
+      ->execute();
 
     $petList = d7_pets_registration_selectbox_contents('pets');
     foreach ($query as $value) {
@@ -63,4 +63,29 @@ function id_load($uid) {
     ->fetchAssoc();
 
   return $id;
+}
+
+function d7_pets_menu_callback() {
+  drupal_add_js('misc/ajax.js');
+  drupal_add_js(drupal_get_path('module', 'd7_pets_registration') . '/js/colored_menu_tubs.js');
+  return 'Hello!';
+//  drupal_goto('d7_pets_menu/d7_pets_registration');
+}
+
+function d7_pets_registration_ajax_menu_callback() {
+  $color = '#';
+  $key = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f'];
+  for ($i = 0; $i <= 2; $i++) {
+    $color = $color . $key[rand(10,15)]. $key[rand(0,8)];
+  }
+  $result = [
+    '#type' => 'ajax',
+    '#commands' => [
+    [
+      'command' => 'change_color',
+      'color' => $color,
+    ]
+    ],
+  ];
+  return $result;
 }
