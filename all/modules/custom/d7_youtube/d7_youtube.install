@@ -1,0 +1,50 @@
+<?php
+/**
+ * @file
+ *  This file contains the schema for the video fields module.
+ */
+
+/**
+ * Implements hook_field_schema().
+ */
+function d7_youtube_field_schema($field) {
+  return [
+    'columns' => [
+      'youtube_id' => [
+        'description' => 'The primary identifier for a video.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'youtube_url' => [
+        'type' => 'varchar',
+        'length' => '2048',
+        'not null' => FALSE,
+      ],
+      'youtube_title' => [
+        'type' => 'varchar',
+        'length' => '256',
+        'not null' => FALSE,
+      ],
+      'youtube_width' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'youtube_height' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'youtube_control' => [
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'indexes' => [
+      'youtube_id' => ['youtube_id'],
+    ],
+  ];
+}
