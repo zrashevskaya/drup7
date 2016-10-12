@@ -12,7 +12,6 @@
         }
     };
     Drupal.ajax.prototype.commands.change_color = function (ajax, response, status) {
-        console.log("1");
         $('div.tabs ul.primary li a').css({'background-color': response.color});
     }
 })(jQuery);

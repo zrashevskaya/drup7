@@ -1,11 +1,5 @@
 <?php
 
-function d7_youtube_form_alter(&$form, &$form_state, $form_id) {
-
-  if($form_id=="field_ui_field_edit_form"){
-    $form['field']['cardinality']['#options'] = [FIELD_CARDINALITY_UNLIMITED => t('Unlimited')] + drupal_map_assoc(range(1, 30));
-  }
-}
 
 function d7_youtube_videos_list() {
   $header = [
@@ -29,10 +23,11 @@ function d7_youtube_videos_list() {
       $rows[] = [
         $node_items->title,
         $node_items->type,
-        l($field_items[0]['youtube_title'], $field_items[0]['youtube_url'], ['attributes'=>['target' => 'blanc']]),
+        l($field_items[0]['youtube_title'], $field_items[0]['youtube_url'], ['attributes'=>['target' => '_blank']]),
       ];
     }
   }
   $array = theme('table', ['header' => $header, 'rows' => $rows]);
+
   return $array;
 }

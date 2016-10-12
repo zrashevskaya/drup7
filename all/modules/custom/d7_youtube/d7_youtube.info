@@ -2,5 +2,3 @@ name = Youtube Field
 description = Contains the video compound field.
 core = 7.x
 package = My Modules
-
-;files[] = d7_youtube_handler.inc

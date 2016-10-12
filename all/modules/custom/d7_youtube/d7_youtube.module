@@ -1,6 +1,5 @@
 <?php
 
-module_load_include('inc', 'd7_youtube', 'd7_youtube.pages');
 /**
  * Implements hook_menu().
  */
@@ -8,6 +7,7 @@ function d7_youtube_menu() {
   $items = [];
   $items['d7_youtube_table'] = [
     'title' => 'Table with youtube videos.',
+    'file' => 'd7_youtube.pages.inc',
     'page callback' => 'd7_youtube_videos_list',
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
@@ -23,7 +23,7 @@ function d7_youtube_field_info() {
     'd7_youtube' => [
       'label' => t('Youtube video'),
       'description' => t("This field stores youtube video's."),
-      'settings' => ['allowed_values' =>[], 'allowed_values_function' => ''],
+      'settings' => ['allowed_values' => [], 'allowed_values_function' => ''],
       'default_widget' => 'd7_youtube',
       'default_formatter' => 'd7_youtube',
     ],
@@ -34,14 +34,18 @@ function d7_youtube_field_info() {
  * Implements hook_field_validate().
  */
 function d7_youtube_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+  $rx = '~
+    ^(?:https?://)?                                            # Optional protocol
+     (?:www\.)?                                                # Optional subdomain
+     (?:youtube\.com/watch\?v=|youtube\.com/embed/|youtu\.be)  # Mandatory domain names
+     ([^&]+)                                                   # URI with video id as capture group 
+     ~x';
   foreach ($items as $delta => $item) {
-    if (!empty($item['youtube_url'])) {
-      if (!preg_match('/(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/', $item['youtube_url'])) {
-        $errors[$field['field_name']][$langcode][$delta][] = [
-          'error' => 'd7_youtube_invalid',
-          'message' => t('URL mast be from Youtube.'),
-        ];
-      }
+    if (!empty($item['youtube_url']) && (!preg_match($rx, $item['youtube_url']))) {
+      $errors[$field['field_name']][$langcode][$delta][] = [
+        'error' => 'd7_youtube_invalid',
+        'message' => t('URL mast be from Youtube.'),
+      ];
     }
   }
 }
@@ -84,7 +88,7 @@ function d7_youtube_field_widget_form(&$form, &$form_state, $field, $instance, $
       ];
 
       foreach ($fields as $key => $label) {
-        switch($key) {
+        switch ($key) {
           case 'youtube_title':
             $element[$key] = [
               '#type' => 'textfield',
@@ -154,42 +158,39 @@ function d7_youtube_field_formatter_info() {
  * Implements hook_field_formatter_view().
  */
 function d7_youtube_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  require_once 'd7_youtube.inc';
   if (!empty($items)) {
-    switch ($display['type']) {
-      case 'd7_youtube':
-        foreach ($items as $key => $item) {
-          $element[$key] = [
-            '#type' => 'html_tag',
-            '#tag' => 'a',
-            '#attributes' => [
-              'href' => $item['youtube_url'],
-              'target' => 'blanc',
-            ],
-            '#value' => $entity->title . ' ' . t('video') . ' ' . ($key + 1),
-          ];
-        }
-        break;
-      case 'd7_youtube_frame':
-        foreach ($items as $key => $item) {
-          $youtube_url = str_replace('watch?v=','embed/', $item['youtube_url']);
-          if ($field['settings']['d7_youtube_showinfo']==0) {
-            $youtube_url .= '?showinfo=0';
-            if ($item['youtube_control']==0){
-              $youtube_url .='&amp;controls=0';
-            }
+    foreach ($items as $key => $item) {
+      $element[$key] = [];
+      if ($display['type'] == 'd7_youtube') {
+        $element[$key] += [
+          'frame' => FALSE,
+          'url' => $item['youtube_url'],
+          'attributes' => ['target' => '_blank'],
+          'value' => $entity->title . ' ' . t('video') . ' ' . ($key + 1),
+        ];
+      }
+      elseif ($display['type'] == 'd7_youtube_frame') {
+        $element[$key] += [
+          'frame' => TRUE,
+          'iframe_url' => glue_url(parse_url($item['youtube_url'])),
+          'attributes' => [
+            'width' => $item['youtube_width'],
+            'height' => $item['youtube_height'],
+          ],
+        ];
+        if ($field['settings']['d7_youtube_showinfo'] == 0) {
+          $element[$key]['iframe_url'] .= '?showinfo=0';
+          if ($item['youtube_control'] == 0) {
+            $element[$key]['iframe_url'] .= '&amp;controls=0';
           }
-          else{
-            if ($item['youtube_control']==0) {
-              $youtube_url .= '?controls=0';
-            }
-          }
-          $element[$key] = [
-            '#type' => 'html_tag',
-            '#tag' => 'div',
-            '#value' => '<iframe width="'.$item['youtube_width'].'" height="'.$item['youtube_height'].'" src="'.$youtube_url.'" frameborder="0" allowfullscreen></iframe>',
-          ];
         }
-        break;
+        else {
+          if ($item['youtube_control'] == 0) {
+            $element[$key]['iframe_url'] .= '?controls=0';
+          }
+        }
+      }
     }
     return $element;
   }
@@ -212,11 +213,3 @@ function d7_youtube_field_settings_form($field, $instance, $has_data) {
   ];
   return $form;
 }
-
-///**
-// * Implements of hook_views_api().
-// */
-//function d7_youtube_views_api() {
-//  return array('api' => 3);
-//}
-//
