@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Changes youtube URL so that it could be possible to use it in iFrame tag.
+ *
+ * @param $parsed
+ * An associative array representing parsed youtube URL which should be unparsed
+ * into the standart youtube URL for iFrame.
+ * @return bool|string A string representing standart youtube URL for iFrame.
+ */
 function glue_url($parsed) {
   if (!is_array($parsed)) {
     return FALSE;

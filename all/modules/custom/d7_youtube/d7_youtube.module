@@ -75,66 +75,32 @@ function d7_youtube_field_widget_info() {
  * Implements hook_field_widget_form().
  */
 function d7_youtube_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  switch ($instance['widget']['type']) {
+  if ($instance['widget']['type'] == 'd7_youtube') {
 
-    case 'd7_youtube':
+    $fields = [
+      'youtube_title' => t('Youtube video title'),
+      'youtube_url' => t('Youtube video URL'),
+      'youtube_width' => t('Youtube video width'),
+      'youtube_height' => t('Youtube video height'),
+    ];
 
-      $fields = [
-        'youtube_title' => t('Youtube video title'),
-        'youtube_url' => t('Youtube video URL'),
-        'youtube_width' => t('Youtube video width'),
-        'youtube_height' => t('Youtube video height'),
-        'youtube_control' => t('Video controller add'),
+    foreach ($fields as $key => $label) {
+      $element[$key] = [
+        '#type' => 'textfield',
+        '#title' => $label,
+        '#default_value' => isset($items[$delta][$key]) ? $items[$delta][$key] : '',
       ];
-
-      foreach ($fields as $key => $label) {
-        switch ($key) {
-          case 'youtube_title':
-            $element[$key] = [
-              '#type' => 'textfield',
-              '#title' => $label,
-              '#default_value' => isset($items[$delta][$key]) ? $items[$delta][$key] : '',
-            ];
-            break;
-          case 'youtube_url':
-            $element[$key] = [
-              '#type' => 'textfield',
-              '#title' => $label,
-              '#default_value' => isset($items[$delta][$key]) ? $items[$delta][$key] : '',
-            ];
-            break;
-          case 'youtube_width':
-            $element[$key] = [
-              '#type' => 'textfield',
-              '#title' => $label,
-              '#default_value' => isset($items[$delta][$key]) ? $items[$delta][$key] : '',
-            ];
-            break;
-          case 'youtube_height':
-            $element[$key] = [
-              '#type' => 'textfield',
-              '#title' => $label,
-              '#default_value' => isset($items[$delta][$key]) ? $items[$delta][$key] : '',
-            ];
-            break;
-          case 'youtube_control':
-            $element[$key] = [
-              '#type' => 'checkbox',
-              '#options' => [
-                '0' => t('iFrame'),
-                '1' => t('URL'),
-              ],
-              '#title' => $label,
-              '#default_value' => isset($items[$delta][$key]) ? $items[$delta][$key] : 0,
-            ];
-            break;
-          default:
-            break;
-        }
-      }
-      break;
+    }
+    $element['youtube_control'] = [
+      '#type' => 'checkbox',
+      '#options' => [
+        '0' => t('iFrame'),
+        '1' => t('URL'),
+      ],
+      '#title' => t('Video controller add'),
+      '#default_value' => isset($items[$delta]['youtube_control']) ? $items[$delta]['youtube_control'] : 0,
+    ];
   }
-
   return $element;
 }
 
@@ -160,6 +126,17 @@ function d7_youtube_field_formatter_info() {
 function d7_youtube_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   require_once 'd7_youtube.inc';
   if (!empty($items)) {
+    $options = '';
+    if (($field['settings']['d7_youtube_showinfo'] == 0)&&($items[0]['youtube_control'] == 0)) {
+      $options .= '?showinfo=0&amp;controls=0';
+    }
+    elseif ($items[0]['youtube_control'] == 0) {
+      $options .= '?controls=0';
+    }
+    elseif ($field['settings']['d7_youtube_showinfo'] == 0) {
+      $options .= '?showinfo=0';
+    }
+
     foreach ($items as $key => $item) {
       $element[$key] = [];
       if ($display['type'] == 'd7_youtube') {
@@ -173,23 +150,12 @@ function d7_youtube_field_formatter_view($entity_type, $entity, $field, $instanc
       elseif ($display['type'] == 'd7_youtube_frame') {
         $element[$key] += [
           'frame' => TRUE,
-          'iframe_url' => glue_url(parse_url($item['youtube_url'])),
+          'iframe_url' => glue_url(parse_url($item['youtube_url'])) . $options,
           'attributes' => [
             'width' => $item['youtube_width'],
             'height' => $item['youtube_height'],
           ],
         ];
-        if ($field['settings']['d7_youtube_showinfo'] == 0) {
-          $element[$key]['iframe_url'] .= '?showinfo=0';
-          if ($item['youtube_control'] == 0) {
-            $element[$key]['iframe_url'] .= '&amp;controls=0';
-          }
-        }
-        else {
-          if ($item['youtube_control'] == 0) {
-            $element[$key]['iframe_url'] .= '?controls=0';
-          }
-        }
       }
     }
     return $element;

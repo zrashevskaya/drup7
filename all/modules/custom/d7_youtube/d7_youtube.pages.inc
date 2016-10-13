@@ -1,6 +1,12 @@
 <?php
 
-
+/**
+ * Display the result of entity query, which shows nodes with youtube video
+ * according to conditions.
+ *
+ * @return bool|array An array representing the list of nodes with links to
+ * youtube videos in the table view.
+ */
 function d7_youtube_videos_list() {
   $header = [
     t('Content Title'),
