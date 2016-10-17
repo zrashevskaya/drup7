@@ -16,9 +16,6 @@ function d7_pets_registration_menu() {
 
   $items['d7_pets_menu/d7_pets_registration'] = [
     'title' => 'Pets registration',
-//    'description' => 'A form to registry your pets.',
-//    'page callback' => 'd7_pets_registration_create_form',
-//    'page arguments' => ['d7_pets_registration_form'],
     'page callback' => 'drupal_get_form',
     'page arguments' => ['d7_pets_owners_update_form'],
     'access arguments' => ['access d7_pets_registration content'],
@@ -111,3 +108,19 @@ function d7_pets_registration_views_api() {
 function d7_pets_registration_flush_caches() {
   return array('cache_d7_pets_registration');
 }
+
+/**
+* Implements hook_cron_queue_info().
+*/
+function d7_pets_registration_cron_queue_info() {
+  $queues['d7_pets_registration_insert'] = [
+    'worker callback' => 'd7_pets_registration_insert',
+    'time' => 180,
+  ];
+  $queues['d7_pets_registration_update'] = [
+    'worker callback' => 'd7_pets_registration_update',
+    'time' => 180,
+  ];
+  return $queues;
+}
+

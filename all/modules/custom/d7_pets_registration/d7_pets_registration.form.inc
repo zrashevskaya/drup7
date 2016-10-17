@@ -105,8 +105,8 @@ function d7_pets_owners_update_form($form, $form_state, $id = NULL) {
     '#required' => TRUE,
   ];
 
-  if ($id){
-    $date = explode('-',$id['owner_birthday']);
+  if ($id) {
+    $date = explode('-', $id['owner_birthday']);
     $form['ownerBirthday']['#default_value'] = [
       'year' => intval($date[0]),
       'month' => intval($date[1]),
@@ -196,7 +196,7 @@ function d7_pets_owners_update_form_validate($form, &$form_state) {
     'confirm_email' => trim($form_state['values']['confirm_email'])
   ];
 
-  if (strtotime($birthday)>strtotime(date('Y-m-d'))){
+  if (strtotime($birthday) > strtotime(date('Y-m-d'))) {
     form_set_error('ownerBirthday',
       t("This date is incorrect. It refers to future.")
     );
@@ -216,7 +216,7 @@ function d7_pets_owners_update_form_validate($form, &$form_state) {
           t("This e-mail is used by another user.")
         );
       }
-      else{
+      else {
         $person = db_select('d7_pets_owners')
           ->condition('name', $values['userName'])
           ->condition('last_name', $values['lastName'])
@@ -245,7 +245,7 @@ function d7_pets_owners_update_form_validate($form, &$form_state) {
           t("!name, your e-mail is already registered.", ['!name' => $values['userName']])
         );
       }
-      else{
+      else {
         $person = db_select('d7_pets_owners')
           ->condition('name', $values['userName'])
           ->condition('last_name', $values['lastName'])
@@ -280,48 +280,15 @@ function d7_pets_owners_update_form_submit($form, $form_state) {
     'lastName' => trim($form_state['values']['lastName']),
     'ownerBirthday' => $birthday,
     'pets' => trim($form_state['values']['pets']),
-    'email' => trim($form_state['values']['email']),
-    'confirm_email' => trim($form_state['values']['confirm_email'])
+    'email' => trim($form_state['values']['email'])
   ];
   if (isset($form_state['values']['owner_id'])) {
     $values ['owner_id'] = $form_state['values']['owner_id'];
-    $result = db_update('d7_pets_owners')
-      ->fields([
-        'name' => $values['userName'],
-        'last_name' => $values['lastName'],
-        'owner_birthday' => $values['ownerBirthday'],
-        'pet_type' => $values['pets'],
-        'email' => $values['email'],
-      ])
-      ->condition('owner_id', $values['owner_id'])
-      ->execute();
-
-    if ($result) {
-      cache_clear_all('d7_pets_registration_table', 'cache_d7_pets_registration');
-      cache_clear_all('owners_by_pets', 'cache_views_data', TRUE);
-      cache_clear_all('pet_owners', 'cache_views_data', TRUE);
-      drupal_set_message(t('Data updated successfully'));
-      drupal_goto('pet-owners');
-    }
-    else {
-      drupal_set_message(t('Data is not updated'), 'warning');
-    }
+    $queue = DrupalQueue::get('d7_pets_registration_update');
+      $queue->createItem($values);
   }
   else {
-    db_insert('d7_pets_owners')
-      ->fields([
-        'name' => $values['userName'],
-        'last_name' => $values['lastName'],
-        'owner_birthday' => $values['ownerBirthday'],
-        'pet_type' => $values['pets'],
-        'email' => $values['email']
-      ])
-      ->execute();
-    cache_clear_all('d7_pets_registration_table', 'cache_d7_pets_registration');
-    cache_clear_all('owners_by_pets', 'cache_views_data', TRUE);
-    cache_clear_all('pet_owners', 'cache_views_data', TRUE);
-    drupal_set_message(
-      t("!name, you have registered successfully! Congrats!", ['!name' => $values['userName']])
-    );
+    $queue = DrupalQueue::get('d7_pets_registration_insert');
+      $queue->createItem($values);
   }
 }

@@ -89,3 +89,45 @@ function d7_pets_registration_ajax_menu_callback() {
   ];
   return $result;
 }
+
+function d7_pets_registration_update($values){
+    $result = db_update('d7_pets_owners')
+      ->fields([
+        'name' => $values['userName'],
+        'last_name' => $values['lastName'],
+        'owner_birthday' => $values['ownerBirthday'],
+        'pet_type' => $values['pets'],
+        'email' => $values['email'],
+      ])
+      ->condition('owner_id', $values['owner_id'])
+      ->execute();
+    if ($result) {
+      cache_clear_all('d7_pets_registration_table', 'cache_d7_pets_registration');
+      cache_clear_all('owners_by_pets', 'cache_views_data', TRUE);
+      cache_clear_all('pet_owners', 'cache_views_data', TRUE);
+      drupal_set_message(t('Data updated successfully'));
+//    drupal_goto('pet-owners');
+    }
+    else {
+      drupal_set_message(t('Data is not updated'), 'warning');
+    }
+}
+
+function d7_pets_registration_insert($values){
+  db_insert('d7_pets_owners')
+      ->fields([
+        'name' => $values['userName'],
+        'last_name' => $values['lastName'],
+        'owner_birthday' => $values['ownerBirthday'],
+        'pet_type' => $values['pets'],
+        'email' => $values['email']
+      ])
+      ->execute();
+    cache_clear_all('d7_pets_registration_table', 'cache_d7_pets_registration');
+    cache_clear_all('owners_by_pets', 'cache_views_data', TRUE);
+    cache_clear_all('pet_owners', 'cache_views_data', TRUE);
+    drupal_set_message(
+      t("!name, you have registered successfully! Congrats!", ['!name' => $values['userName']])
+    );
+}
+

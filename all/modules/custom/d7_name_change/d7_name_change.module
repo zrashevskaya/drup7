@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function d7_name_change_menu() {
+  $items = array();
+
+  $items['d7_name_change'] = [
+    'title' => 'Example of Batch process',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['d7_name_change_form'],
+    'access callback' => TRUE,
+    'file' => 'd7_name_change.form.inc',
+  ];
+
+  return $items;
+}

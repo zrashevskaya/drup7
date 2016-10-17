@@ -1,0 +1,5 @@
+name = D7 Name Change
+description = This module allows to change names using batch.
+core = 7.x
+package = My Modules
+dependencies[] = d7_pets_registration
