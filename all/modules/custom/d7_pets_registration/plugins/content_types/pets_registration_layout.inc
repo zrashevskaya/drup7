@@ -1,12 +1,12 @@
 <?php
 
-$plugin = array(
+$plugin = [
   'title' => t('Pets Registration layout'),
   'description' => t('The output of pets registration form'),
   'render callback' => 'pets_registration_layout_content_type_render',
   'category' => t('Custom panes'),
   'single' => TRUE,
-);
+];
 
 /**
  * Render callback for the content type.
@@ -14,6 +14,5 @@ $plugin = array(
 function pets_registration_layout_content_type_render($subtype, $conf, $args, $context) {
   $block = new stdClass();
   $block->content = drupal_get_form('d7_pets_owners_update_form');
-//  $block->content = drupal_get_form('d7_pets_registration_form');
   return $block;
 }

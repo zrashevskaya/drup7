@@ -11,6 +11,7 @@ function d7_youtube_videos_list() {
   $header = [
     t('Content Title'),
     t('Content Type'),
+    t('Changed'),
     t('Video Title'),
   ];
   $rows = [];
@@ -29,6 +30,7 @@ function d7_youtube_videos_list() {
       $rows[] = [
         $node_items->title,
         $node_items->type,
+        date('Y-m-d', $node_items->changed),
         l($field_items[0]['youtube_title'], $field_items[0]['youtube_url'], ['attributes'=>['target' => '_blank']]),
       ];
     }

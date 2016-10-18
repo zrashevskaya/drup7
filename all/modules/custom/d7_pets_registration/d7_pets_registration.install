@@ -3,7 +3,7 @@
 /**
  * Implements hook_schema().
  */
-function d7_pets_registration_schema(){
+function d7_pets_registration_schema() {
   $schema['d7_pets_owners'] = array(
     'description' => t('The table for owners data.'),
     'fields' => array(
@@ -37,7 +37,10 @@ function d7_pets_registration_schema(){
   return $schema;
 }
 
-function d7_pets_registration_update_7001(){
+/**
+ * Implements pet type into database table.
+ */
+function d7_pets_registration_update_7001() {
   db_add_field('d7_pets_owners', 'pet_type', [
     'type' => 'varchar',
     'length' => 20,
@@ -48,7 +51,7 @@ function d7_pets_registration_update_7001(){
 /**
  * Implements date of birth into database table.
  */
-function d7_pets_registration_update_7002(){
+function d7_pets_registration_update_7002() {
   db_add_field('d7_pets_owners', 'owner_birthday', [
     'description' => t('Owner date of birth.'),
     'type' => 'varchar',
@@ -60,14 +63,18 @@ function d7_pets_registration_update_7002(){
 /**
  * Implements index for field 'email'.
  */
-function d7_pets_registration_update_7003(){
-  db_add_index('d7_pets_owners', 'personality', ['name', 'last_name', 'owner_birthday']);
+function d7_pets_registration_update_7003() {
+  db_add_index('d7_pets_owners', 'personality', [
+    'name',
+    'last_name',
+    'owner_birthday'
+  ]);
 }
 
 /**
  * Implements new table for cache.
  */
-function d7_pets_registration_update_7004(){
+function d7_pets_registration_update_7004() {
   db_create_table('cache_d7_pets_registration', drupal_get_schema_unprocessed('system', 'cache'));
   return 'Implements new table for cache.';
 }
@@ -75,54 +82,53 @@ function d7_pets_registration_update_7004(){
 /**
  * Delete index for field 'name', 'last_name' and 'owners_birthday'.
  */
-function d7_pets_registration_update_7005(){
-  db_drop_index('d7_pets_owners', 'personality');
-}
-/**
- * Implements index for field 'name', 'last_name' and 'owners_birthday', change type of field.
- */
-function d7_pets_registration_update_7006(){
-  db_change_field('d7_pets_owners', 'owner_birthday', 'owner_birthday', [
-    'type' => 'varchar',
-    'mysql_type' => 'date',
-    'not null' => TRUE,
-  ]);
-  db_add_index('d7_pets_owners', 'personality', ['name', 'last_name', 'owner_birthday']);
-}
-
-/**
- * Delete index for field 'name', 'last_name' and 'owners_birthday'.
- */
-function d7_pets_registration_update_7007(){
-  db_drop_index('d7_pets_owners', 'personality');
-}
-
-///**
-// * Implements index for field 'name', 'last_name' and 'owners_birthday', change type of field.
-// */
-//function d7_pets_registration_update_7008(){
-//  db_change_field('d7_pets_owners', 'owner_birthday', 'owner_birthday', [
-//    'type' =>'date',
-//    'not null' => TRUE,
-//  ]);
-//  db_add_index('d7_pets_owners', 'personality', ['name', 'last_name', 'owner_birthday']);
-//}
-
-/**
- * Delete index for field 'name', 'last_name' and 'owners_birthday'.
- */
-function d7_pets_registration_update_7009(){
+function d7_pets_registration_update_7005() {
   db_drop_index('d7_pets_owners', 'personality');
 }
 
 /**
  * Implements index for field 'name', 'last_name' and 'owners_birthday', change type of field.
  */
-function d7_pets_registration_update_7010(){
+function d7_pets_registration_update_7006() {
   db_change_field('d7_pets_owners', 'owner_birthday', 'owner_birthday', [
     'type' => 'varchar',
     'mysql_type' => 'date',
     'not null' => TRUE,
   ]);
-  db_add_index('d7_pets_owners', 'personality', ['name', 'last_name', 'owner_birthday']);
+  db_add_index('d7_pets_owners', 'personality', [
+    'name',
+    'last_name',
+    'owner_birthday'
+  ]);
+}
+
+/**
+ * Delete index for field 'name', 'last_name' and 'owners_birthday'.
+ */
+function d7_pets_registration_update_7007() {
+  db_drop_index('d7_pets_owners', 'personality');
+}
+
+
+/**
+ * Delete index for field 'name', 'last_name' and 'owners_birthday'.
+ */
+function d7_pets_registration_update_7009() {
+  db_drop_index('d7_pets_owners', 'personality');
+}
+
+/**
+ * Implements index for field 'name', 'last_name' and 'owners_birthday', change type of field.
+ */
+function d7_pets_registration_update_7010() {
+  db_change_field('d7_pets_owners', 'owner_birthday', 'owner_birthday', [
+    'type' => 'varchar',
+    'mysql_type' => 'date',
+    'not null' => TRUE,
+  ]);
+  db_add_index('d7_pets_owners', 'personality', [
+    'name',
+    'last_name',
+    'owner_birthday'
+  ]);
 }

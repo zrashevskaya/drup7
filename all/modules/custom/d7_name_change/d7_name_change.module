@@ -4,7 +4,7 @@
  * Implements hook_menu().
  */
 function d7_name_change_menu() {
-  $items = array();
+  $items = [];
 
   $items['d7_name_change'] = [
     'title' => 'Example of Batch process',

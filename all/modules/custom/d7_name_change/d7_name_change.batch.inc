@@ -34,10 +34,10 @@ function d7_name_change_processing($names, &$context) {
         $counter++;
         $context['sandbox']['progress']++;
 
-        $context['message'] = t('Now processing name %progress of %count', array(
+        $context['message'] = t('Now processing name %progress of %count', [
           '%progress' => $context['sandbox']['progress'],
           '%count' => $context['sandbox']['max']
-        ));
+        ]);
         $context['results']['processed'] = $context['sandbox']['progress'];
       }
     }

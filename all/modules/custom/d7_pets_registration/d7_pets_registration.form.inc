@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Implements hook_form().
+ * Used for deletion users from database.
+ */
 function d7_pets_owners_delete_form($form, $form_state, $id) {
   $form = [];
 
@@ -21,6 +25,10 @@ function d7_pets_owners_delete_form($form, $form_state, $id) {
   return $form;
 }
 
+/**
+ * Implements hook_submit().
+ * Used for deletion users from database.
+ */
 function d7_pets_owners_delete_form_submit($form, &$form_state) {
   $id = $form_state['values']['owner_id'];
   $result = db_delete('d7_pets_owners')
@@ -39,18 +47,12 @@ function d7_pets_owners_delete_form_submit($form, &$form_state) {
   drupal_goto('pet-owners');
 }
 
+/**
+ * Implements hook_form().
+ * Used for update(when ID is provided) and creation users in database.
+ */
 function d7_pets_owners_update_form($form, $form_state, $id = NULL) {
   $form = [];
-
-//  if (empty($id) || empty($id['owner_id'])) {
-//    $placeholders = [
-//      '!back' => l(t('Go back'), 'd7_pets_owners_table'),
-//    ];
-//    $form['text'] = [
-//      '#markup' => t('Undefined user. !back.', $placeholders),
-//    ];
-//    return $form;
-//  }
 
   if ($id) {
     $form['owner_id'] = [
@@ -183,6 +185,7 @@ function d7_pets_owners_update_form($form, $form_state, $id = NULL) {
 
 /**
  * Implements hook_validate().
+ * Used for update(when ID is provided) and creation users in database.
  */
 function d7_pets_owners_update_form_validate($form, &$form_state) {
   $datefields = $form_state['values']['ownerBirthday'];
@@ -201,76 +204,72 @@ function d7_pets_owners_update_form_validate($form, &$form_state) {
       t("This date is incorrect. It refers to future.")
     );
   }
-  elseif ($values['email'] == $values['confirm_email']) {
-    if (isset($form_state['values']['owner_id'])) {
-      $values ['owner_id'] = $form_state['values']['owner_id'];
-      $check = db_select('d7_pets_owners')
-        ->condition('email', $values['email'])
-        ->condition('owner_id', $values['owner_id'], '<>')
-        ->countQuery()
-        ->execute()
-        ->fetchField();
-
-      if ($check) {
-        form_set_error('email',
-          t("This e-mail is used by another user.")
-        );
-      }
-      else {
-        $person = db_select('d7_pets_owners')
-          ->condition('name', $values['userName'])
-          ->condition('last_name', $values['lastName'])
-          ->condition('owner_birthday', $values['ownerBirthday'])
-          ->condition('owner_id', $values['owner_id'], '<>')
-          ->countQuery()
-          ->execute()
-          ->fetchField();
-
-        if ($person) {
-          form_set_error('email',
-            t("There is a user with the same Name, Last Name and Birthday.")
-          );
-        }
-      }
-    }
-    else {
-      $result = db_select('d7_pets_owners')
-        ->condition('email', $values['email'])
-        ->countQuery()
-        ->execute()
-        ->fetchField();
-
-      if ($result) {
-        form_set_error('email',
-          t("!name, your e-mail is already registered.", ['!name' => $values['userName']])
-        );
-      }
-      else {
-        $person = db_select('d7_pets_owners')
-          ->condition('name', $values['userName'])
-          ->condition('last_name', $values['lastName'])
-          ->condition('owner_birthday', $values['ownerBirthday'])
-          ->countQuery()
-          ->execute()
-          ->fetchField();
-
-        if ($person) {
-          form_set_error('email',
-            t("There is a user with the same Name, Last Name and Birthday.")
-          );
-        }
-      }
-    }
-  }
-  else {
+  if ($values['email'] != $values['confirm_email']) {
     form_set_error('email',
       t("Please check e-mail repeat.")
     );
+  }
+
+  if (isset($form_state['values']['owner_id'])) {
+    $values ['owner_id'] = $form_state['values']['owner_id'];
+    $check = db_select('d7_pets_owners')
+      ->condition('email', $values['email'])
+      ->condition('owner_id', $values['owner_id'], '<>')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($check) {
+      form_set_error('email',
+        t("This e-mail is used by another user.")
+      );
+    }
+    $person = db_select('d7_pets_owners')
+      ->condition('name', $values['userName'])
+      ->condition('last_name', $values['lastName'])
+      ->condition('owner_birthday', $values['ownerBirthday'])
+      ->condition('owner_id', $values['owner_id'], '<>')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($person) {
+      form_set_error('email',
+        t("There is a user with the same Name, Last Name and Birthday.")
+      );
+    }
+  }
+  else {
+    $result = db_select('d7_pets_owners')
+      ->condition('email', $values['email'])
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($result) {
+      form_set_error('email',
+        t("!name, your e-mail is already registered.", ['!name' => $values['userName']])
+      );
+    }
+    $person = db_select('d7_pets_owners')
+      ->condition('name', $values['userName'])
+      ->condition('last_name', $values['lastName'])
+      ->condition('owner_birthday', $values['ownerBirthday'])
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($person) {
+      form_set_error('email',
+        t("There is a user with the same Name, Last Name and Birthday.")
+      );
+    }
   }
 }
 
 /**
  * Implements hook_submit().
+ * Used for update(when ID is provided) and creation users in database.
  */
 function d7_pets_owners_update_form_submit($form, $form_state) {
   $datefields = $form_state['values']['ownerBirthday'];
@@ -285,10 +284,10 @@ function d7_pets_owners_update_form_submit($form, $form_state) {
   if (isset($form_state['values']['owner_id'])) {
     $values ['owner_id'] = $form_state['values']['owner_id'];
     $queue = DrupalQueue::get('d7_pets_registration_update');
-      $queue->createItem($values);
+    $queue->createItem($values);
   }
   else {
     $queue = DrupalQueue::get('d7_pets_registration_insert');
-      $queue->createItem($values);
+    $queue->createItem($values);
   }
 }
