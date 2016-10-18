@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * Implements hook_entity_info().
+ */
+function d7_custom_entity_info() {
+
+  $info = [];
+
+  $info['d7_custom'] = [
+    'label' => t('Custom'),
+    'base table' => 'd7_custom',
+    'entity keys' => [
+      'id' => 'id',
+      'label' => 'name',
+    ],
+    'module' => 'd7_custom',
+  ];
+
+  return $info;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function d7_custom_menu() {
+  $items = [];
+
+  $items['d7_custom'] = [
+    'title' => 'Testing of Custom Entity',
+    'page callback' => 'd7_custom_callback',
+    'access callback' => TRUE,
+  ];
+
+  return $items;
+}
+
+function d7_custom_callback(){
+  $projects = entity_load('d7_custom', array(1, 2));
+  dpm($projects);
+  return 'Some string';
+}

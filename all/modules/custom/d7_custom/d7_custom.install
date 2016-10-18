@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function d7_custom_schema() {
+
+  $schema = [];
+
+  $schema['d7_custom'] = [
+    'description' => 'The base table for the Custom entity',
+    'fields' => [
+      'id' => [
+        'description' => 'Primary key of the Custom entity',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'name' => [
+        'description' => 'Custom entity name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+      'description' => [
+        'description' => 'Custom entity description.',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+        'default' => NULL
+      ],
+      'created' => [
+        'description' => 'Custom entity created.',
+        'type' => 'int',
+        'length' => 11,
+        'not null' => FALSE,
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  return $schema;
+}
