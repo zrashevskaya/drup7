@@ -10,11 +10,31 @@ function d7_custom_entity_info() {
   $info['d7_custom'] = [
     'label' => t('Custom'),
     'base table' => 'd7_custom',
+    'entity class' => 'd7CustomEntity',
+    'controller class' => 'd7CustomEntityController',
     'entity keys' => [
       'id' => 'id',
       'label' => 'name',
     ],
     'module' => 'd7_custom',
+    'access callback' => 'd7_custom_access_callback',
+
+    'uri callback' => 'entity_class_uri',
+    'admin ui' => array(
+      'path' => 'admin/d7_custom',
+      'file' => 'd7_custom.form.inc',
+      'controller class' => 'EntityDefaultUIController',
+    ),
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'd7_custom' => array(
+        'label' => t('Custom Bundle'),
+        'admin' => array(
+          'path' => 'admin/d7_custom',
+        ),
+      ),
+    ),
+    'views controller class' => 'EntityDefaultViewsController',
   ];
 
   return $info;
@@ -28,15 +48,30 @@ function d7_custom_menu() {
 
   $items['d7_custom'] = [
     'title' => 'Testing of Custom Entity',
+    'file' => 'd7_custom.pages.inc',
     'page callback' => 'd7_custom_callback',
     'access callback' => TRUE,
+  ];
+
+  $items['d7_custom/%'] = [
+    'title' => 'D7 Custom Entity',
+    'file' => 'd7_custom.pages.inc',
+    'page callback' => 'd7_custom_demo_view',
+    'page arguments' => [1],
+    'access arguments' => ['access content'],
   ];
 
   return $items;
 }
 
-function d7_custom_callback(){
-  $projects = entity_load('d7_custom', array(1, 2));
-  dpm($projects);
-  return 'Some string';
+/**
+ * Access callback for d7 Custom entities.
+ */
+function d7_custom_access_callback($op, $project = NULL, $account = NULL) {
+  if ($op == 'view' || $op == 'update' || $op == 'create' || $op == 'delete') {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }

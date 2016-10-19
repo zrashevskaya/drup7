@@ -144,7 +144,7 @@ function d7_youtube_field_formatter_view($entity_type, $entity, $field, $instanc
           'frame' => FALSE,
           'url' => $item['youtube_url'],
           'attributes' => ['target' => '_blank'],
-          'value' => $entity->title . ' ' . t('video') . ' ' . ($key + 1),
+          'value' => t('video') . ' ' . ($key + 1),
         ];
       }
       elseif ($display['type'] == 'd7_youtube_frame') {

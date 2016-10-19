@@ -3,3 +3,6 @@ description = This module allows to create custom entity.
 core = 7.x
 package = My Modules
 dependencies[] = entity
+
+files[] = includes/d7_custom.entity.controller.inc
+files[] = includes/d7_custom.entity.inc
