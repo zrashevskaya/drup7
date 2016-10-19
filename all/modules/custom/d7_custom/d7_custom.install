@@ -35,9 +35,57 @@ function d7_custom_schema() {
         'length' => 11,
         'not null' => FALSE,
       ],
+      'status' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0x01,
+        'size' => 'tiny',
+        'description' => 'The exportable status of the entity.',
+      ],
+      'module' => [
+        'description' => 'The name of the providing module if the entity has been defined in code.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+      'language' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+      ],
     ],
     'primary key' => ['id'],
   ];
 
   return $schema;
+}
+
+/**
+ * Implements additional columns into database table.
+ */
+function d7_custom_update_7001() {
+  db_add_field('d7_custom', 'status', [
+    'type' => 'int',
+    'not null' => TRUE,
+    'default' => 0x01,
+    'size' => 'tiny',
+    'description' => 'The exportable status of the entity.',
+  ]);
+  db_add_field('d7_custom', 'module', [
+    'description' => 'The name of the providing module if the entity has been defined in code.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => FALSE,
+  ]);
+}
+
+/**
+ * Implements additional column into database table.
+ */
+function d7_custom_update_7002() {
+  db_add_field('d7_custom', 'language', [
+    'type' => 'varchar',
+    'length' => 32,
+    'not null' => FALSE,
+  ]);
 }

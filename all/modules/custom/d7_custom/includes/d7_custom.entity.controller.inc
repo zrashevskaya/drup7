@@ -3,7 +3,7 @@
 /**
  * Extending the EntityAPIController for the Project entity.
  */
-class d7CustomEntityController extends EntityAPIController {
+class d7CustomEntityController extends EntityAPIControllerExportable {
 
   /**
    * Builds a structured array representing the entity's content.

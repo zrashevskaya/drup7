@@ -5,6 +5,12 @@
  */
 function d7_custom_form($form, &$form_state, $d7_custom = NULL) {
 
+  $langcode = entity_language('d7_custom', $d7_custom);
+
+  if (empty($langcode)) {
+    $langcode = LANGUAGE_NONE;
+  }
+
   $form['name'] = array(
     '#title' => t('D7 Custom name'),
     '#type' => 'textfield',
@@ -26,7 +32,12 @@ function d7_custom_form($form, &$form_state, $d7_custom = NULL) {
     '#required' => TRUE,
   );
 
-  field_attach_form('d7_custom', $d7_custom, $form, $form_state);
+  $form['language'] = array(
+    '#type' => 'value',
+    '#default_value' => $langcode,
+  );
+
+  field_attach_form('d7_custom', $d7_custom, $form, $form_state, $langcode);
 
   $form['submit'] = array(
     '#type' => 'submit',
