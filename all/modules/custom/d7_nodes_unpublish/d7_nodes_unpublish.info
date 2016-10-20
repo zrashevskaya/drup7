@@ -1,4 +1,4 @@
 name = D7 Nodes Unpublish
-description = This module allows to unpublish old nodes.
+description = This module allows to unpublish old nodes (elder than 2 days).
 core = 7.x
 package = My Modules
