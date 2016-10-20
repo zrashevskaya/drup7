@@ -1,65 +1,65 @@
 <?php
-
-/**
- * Implements hook_cron_queue_info().
- */
-function d7_nodes_unpublish_cron_queue_info() {
-  $queue['d7_nodes_unpublish_queue'] = [
-    'worker callback' => 'd7_nodes_unpublish_item_process',
-    'time' => 60,
-  ];
-  return $queue;
-}
-
-/**
- * Implements hook_cron().
- */
-function d7_nodes_unpublish_cron() {
-  $items = d7_nodes_unpublish_load_data();
-  if ($items) {
-    $queue = DrupalQueue::get('d7_nodes_unpublish_queue');
-    foreach ($items as $item) {
-      $queue->createItem($item);
-    }
-  }
-}
-
-/**
- * Provide data set for unpublishing via cron.
- * @return mixed Data set.
- */
-function d7_nodes_unpublish_load_data() {
-  $time = time() - 60 * 60 * 24 * 2;
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', 'node')
-    ->propertyCondition('status', NODE_PUBLISHED)
-    ->propertyCondition('changed', $time, '<');
-
-  $data = $query->execute();
-  if($data) {
-    foreach ($data['node'] as $node) {
-      $node->time = time();
-    }
-    return $data['node'];
-  }
-  else{
-    return FALSE;
-  }
-}
-
-/**
- * Update database ('node' table) by unpublishing nodes elder than 2 days.
- * @param $item Object which should be unpublished.
- */
-function d7_nodes_unpublish_item_process($item) {
-  $result = db_update('node')
-    ->fields([
-      'status' => 0,
-      'changed' => $item->time,
-    ])
-    ->condition('nid', $item->nid)
-    ->execute();
-  if (!$result) {
-    drupal_set_message(t('Process of unpublishing goes wrong!'), 'warning');
-  }
-}
+//
+///**
+// * Implements hook_cron_queue_info().
+// */
+//function d7_nodes_unpublish_cron_queue_info() {
+//  $queue['d7_nodes_unpublish_queue'] = [
+//    'worker callback' => 'd7_nodes_unpublish_item_process',
+//    'time' => 60,
+//  ];
+//  return $queue;
+//}
+//
+///**
+// * Implements hook_cron().
+// */
+//function d7_nodes_unpublish_cron() {
+//  $items = d7_nodes_unpublish_load_data();
+//  if ($items) {
+//    $queue = DrupalQueue::get('d7_nodes_unpublish_queue');
+//    foreach ($items as $item) {
+//      $queue->createItem($item);
+//    }
+//  }
+//}
+//
+///**
+// * Provide data set for unpublishing via cron.
+// * @return mixed Data set.
+// */
+//function d7_nodes_unpublish_load_data() {
+//  $time = time() - 60 * 60 * 24 * 2;
+//  $query = new EntityFieldQuery();
+//  $query->entityCondition('entity_type', 'node')
+//    ->propertyCondition('status', NODE_PUBLISHED)
+//    ->propertyCondition('changed', $time, '<');
+//
+//  $data = $query->execute();
+//  if($data) {
+//    foreach ($data['node'] as $node) {
+//      $node->time = time();
+//    }
+//    return $data['node'];
+//  }
+//  else{
+//    return FALSE;
+//  }
+//}
+//
+///**
+// * Update database ('node' table) by unpublishing nodes elder than 2 days.
+// * @param $item Object which should be unpublished.
+// */
+//function d7_nodes_unpublish_item_process($item) {
+//  $result = db_update('node')
+//    ->fields([
+//      'status' => 0,
+//      'changed' => $item->time,
+//    ])
+//    ->condition('nid', $item->nid)
+//    ->execute();
+//  if (!$result) {
+//    drupal_set_message(t('Process of unpublishing goes wrong!'), 'warning');
+//  }
+//}

@@ -23,7 +23,7 @@ function d7_custom_entity_info() {
 
     'uri callback' => 'entity_class_uri',
     'admin ui' => array(
-      'path' => 'admin/d7_custom',
+      'path' => 'admin/structure/d7_custom',
       'file' => 'd7_custom.form.inc',
       'controller class' => 'EntityDefaultUIController',
     ),
@@ -32,7 +32,7 @@ function d7_custom_entity_info() {
       'd7_custom' => array(
         'label' => t('Custom Bundle'),
         'admin' => array(
-          'path' => 'admin/d7_custom',
+          'path' => 'admin/structure/d7_custom',
         ),
       ),
     ),
@@ -40,14 +40,8 @@ function d7_custom_entity_info() {
     'translatable' => TRUE,
     'translation' => array(
       'entity_translation' => array(
-//        'class' => 'EntityTranslationDefaultHandler',
-        'base path' => 'admin/d7_custom/%d7_custom',
-        'translate path' => 'admin/d7_custom/manage/%d7_custom/translate',
+        'base path' => 'admin/structure/d7_custom/manage/%d7_custom',
         'path wildcard' => '%d7_custom',
-//        'access callback' => 'test_entity_translation_tab_access',
-//        'access arguments' => array(1),
-//        'edit form' => 'custom_entity_form_state_key',
-//        'bundle callback' => 'custom_entity_translation_enabled_bundle',
         'default settings' => array(
           'default_language' => LANGUAGE_NONE,
           'hide_language_selector' => FALSE,
